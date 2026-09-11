@@ -56,22 +56,27 @@ const parseDocument = (source) => {
   return { preamble, sections }
 }
 
+export const parseCta = (line) => {
+  const match = line.trim().match(/^\[CTA:\s*([^|]+)\|([^|]+?)(?:\|(left|center|right))?\]$/i)
+  return match ? { label: match[1].trim(), url: match[2].trim(), align: (match[3] || 'center').toLowerCase() } : null
+}
+
+const renderCta = (cta) => `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;"><tr><td align="${cta.align}" style="padding:8px 0 18px;text-align:${cta.align};"><a href="${escapeHtml(safeUrl(cta.url))}" target="_blank" style="display:inline-block;padding:12px 24px;border:2px solid ${COLORS.blue};border-radius:10px;color:${COLORS.blue};font-family:Arial,Helvetica,sans-serif !important;font-size:14px;line-height:18px;font-weight:700;text-align:center;text-decoration:none;">${escapeHtml(cta.label)}</a></td></tr></table>`
+
 const renderParagraphs = (lines, options = {}) => {
   const { color = COLORS.text, compact = false } = options
   return lines
     .filter(Boolean)
     .map((line, index) => {
-      const cta = line.match(/^\[CTA:\s*(.+?)\|(.+?)\]$/)
-      if (cta) {
-        return `<div style="padding:8px 0 18px;text-align:center;"><a href="${safeUrl(cta[2])}" target="_blank" style="display:inline-block;padding:12px 24px;border:2px solid ${COLORS.blue};border-radius:10px;color:${COLORS.blue};font-family:Arial,Helvetica,sans-serif !important;font-size:14px;line-height:18px;font-weight:700;text-decoration:none;">${escapeHtml(cta[1])}</a></div>`
-      }
+      const cta = parseCta(line)
+      if (cta) return renderCta(cta)
       const isBullet = /^(📌|✓|⏰|☎|👉|-|•)/.test(line)
       if (isBullet) {
         const marker = line.match(/^(📌|✓|⏰|☎|👉|-|•)/)?.[0] || '•'
         const markerColor = marker === '✓' ? COLORS.lime : COLORS.orange
-        return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;"><tr><td valign="top" width="28" style="width:28px;padding:${compact ? 4 : 7}px 0;color:${markerColor};font-family:Arial,Helvetica,sans-serif !important;font-size:16px;line-height:22px;font-weight:700;">${escapeHtml(marker)}</td><td style="padding:${compact ? 4 : 7}px 0;color:${color};font-family:Arial,Helvetica,sans-serif !important;font-size:14px;line-height:22px;">${inlineBold(stripMarkers(line))}</td></tr></table>`
+        return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;"><tr><td valign="top" width="28" style="width:28px;padding:${compact ? 4 : 7}px 0;color:${markerColor};font-family:Arial,Helvetica,sans-serif !important;font-size:16px;line-height:22px;font-weight:700;">${escapeHtml(marker)}</td><td style="padding:${compact ? 4 : 7}px 0;text-align:justify;color:${color};font-family:Arial,Helvetica,sans-serif !important;font-size:14px;line-height:22px;">${inlineBold(stripMarkers(line))}</td></tr></table>`
       }
-      return `<p style="margin:${index ? 13 : 0}px 0 0;color:${color};font-family:Arial,Helvetica,sans-serif !important;font-size:14px;line-height:23px;">${inlineBold(line)}</p>`
+      return `<p style="margin:${index ? 13 : 0}px 0 0;text-align:justify;color:${color};font-family:Arial,Helvetica,sans-serif !important;font-size:14px;line-height:23px;">${inlineBold(line)}</p>`
     })
     .join('')
 }
@@ -113,14 +118,18 @@ const renderOffer = (section) => {
     ? groups.map((group) => `<td class="email-stack" valign="top" width="50%" style="width:50%;padding:6px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:separate;border-spacing:0;background:#ffffff;border:1px solid #ffd2b8;border-radius:12px;font-family:Arial,Helvetica,sans-serif;"><tr><td style="padding:16px;"><div style="margin-bottom:10px;color:${COLORS.blue};font-family:Arial,Helvetica,sans-serif !important;font-size:18px;line-height:24px;font-weight:700;">${renderHeadingText(group.title)}</div>${renderParagraphs(group.lines, { compact: true })}</td></tr></table></td>`).join('')
     : `<td style="padding:6px;">${renderParagraphs(intro)}</td>`
 
-  return `<tr><td style="padding:30px 34px;background:#ffffff;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:separate;border-spacing:0;background:#fff8f1;border:1px solid #ffd2b8;border-radius:17px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;"><tr><td align="center" style="padding:20px;background:${COLORS.orange};color:#ffffff;font-family:Arial,Helvetica,sans-serif !important;"><div style="font-family:Arial,Helvetica,sans-serif !important;font-size:19px;line-height:27px;font-weight:700;">${renderHeadingText(section.title)}</div>${intro.filter(Boolean).map((line) => `<div style="margin-top:6px;font-family:Arial,Helvetica,sans-serif !important;font-size:14px;line-height:22px;font-weight:700;">${inlineBold(line)}</div>`).join('')}</td></tr><tr><td style="padding:14px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;"><tr>${cards}</tr></table></td></tr></table></td></tr>`
+  return `<tr><td style="padding:30px 34px;background:#ffffff;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:separate;border-spacing:0;background:#fff8f1;border:1px solid #ffd2b8;border-radius:17px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;"><tr><td align="center" style="padding:20px;background:${COLORS.orange};color:#ffffff;font-family:Arial,Helvetica,sans-serif !important;"><div style="font-family:Arial,Helvetica,sans-serif !important;font-size:19px;line-height:27px;font-weight:700;">${renderHeadingText(section.title)}</div>${intro.filter(Boolean).map((line) => parseCta(line) ? renderCta(parseCta(line)) : `<div style="margin-top:6px;font-family:Arial,Helvetica,sans-serif !important;font-size:14px;line-height:22px;font-weight:700;">${inlineBold(line)}</div>`).join('')}</td></tr><tr><td style="padding:14px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;"><tr>${cards}</tr></table></td></tr></table></td></tr>`
 }
 
-const renderRegistration = (section, mascot) => `
+const renderRegistration = (section, mascot) => {
+  const ctas = section.lines.map(parseCta).filter(Boolean)
+  const bodyLines = section.lines.filter(line => !parseCta(line))
+  return `
   <tr><td style="padding:0 34px 28px;background:#ffffff;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:separate;border-spacing:0;background:${COLORS.pale};border:1px solid #d4e9f8;border-radius:16px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;"><tr>
-    <td valign="middle" style="padding:23px 10px 23px 24px;"><div style="color:${COLORS.navy};font-family:Arial,Helvetica,sans-serif !important;font-size:22px;line-height:28px;font-weight:700;">${renderHeadingText(section.title)}</div><div style="margin-top:10px;">${renderParagraphs(section.lines)}</div></td>
+    <td valign="middle" style="padding:23px 10px 23px 24px;"><div style="color:${COLORS.navy};font-family:Arial,Helvetica,sans-serif !important;font-size:22px;line-height:28px;font-weight:700;">${renderHeadingText(section.title)}</div><div style="margin-top:10px;">${renderParagraphs(bodyLines)}</div></td>
     <td valign="bottom" align="center" width="150" style="width:150px;padding:10px 12px 0 0;"><img src="${safeUrl(mascot, '')}" alt="" width="138" style="display:block;width:138px;max-width:100%;height:auto;margin:0 auto;border:0;"></td>
-  </tr></table></td></tr>`
+  </tr>${ctas.length ? `<tr><td colspan="2" style="padding:0 24px 6px;">${ctas.map(renderCta).join('')}</td></tr>` : ''} </table></td></tr>`
+}
 
 const renderGeneric = (section) => `<tr><td style="padding:25px 34px;background:#ffffff;"><div style="margin-bottom:12px;color:${COLORS.navy};font-family:Arial,Helvetica,sans-serif !important;font-size:20px;line-height:27px;font-weight:700;">${renderHeadingText(section.title)}</div>${renderParagraphs(section.lines)}</td></tr>`
 

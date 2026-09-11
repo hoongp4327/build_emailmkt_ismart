@@ -79,6 +79,14 @@ textarea {
 }
 textarea:focus, input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(8,112,197,.12); }
 
+.cta-settings { margin-top: 12px; }
+.cta-settings p { margin: 0 0 10px; color: var(--muted); font-size: 12px; line-height: 19px; }
+.cta-row { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; padding:8px 0; border-bottom:1px solid var(--border); font-size:12px; }
+.cta-row > span { flex:1; min-width:120px; overflow-wrap:anywhere; }
+.cta-row > div { display:flex; gap:4px; }
+.cta-row button { padding:6px 9px; border:1px solid var(--border); border-radius:5px; background:#fff; color:var(--navy); font-size:12px; }
+.cta-row button[aria-pressed="true"] { background:var(--blue); border-color:var(--blue); color:#fff; }
+.cta-row button:focus-visible { outline:2px solid var(--blue); outline-offset:2px; }
 .format-guide { margin-top: 16px; }
 .format-guide h2 { margin: 0 0 8px; font-size: 13px; line-height: 19px; }
 .guide-grid {

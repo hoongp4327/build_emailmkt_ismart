@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { DEFAULT_CONTENT, DEFAULT_IMAGES } from './defaultContent'
-import { buildEmail } from './emailTemplate'
+import { buildEmail, parseCta } from './emailTemplate'
 
 const STORAGE_KEY = 'ismart-email-builder-v1'
 
@@ -41,6 +41,11 @@ function App() {
   const toastTimer = useRef(null)
 
   const email = useMemo(() => buildEmail(content, images), [content, images, previewVersion])
+  const ctas = content.split('\n').map((line, index) => ({ ...parseCta(line), index })).filter(cta => cta.label)
+  const alignCta = (index, align) => setContent(current => current.split('\n').map((line, lineIndex) => {
+    const cta = lineIndex === index ? parseCta(line) : null
+    return cta ? `[CTA: ${cta.label}|${cta.url}|${align}]` : line
+  }).join('\n'))
 
   useEffect(() => {
     setSaveState('Đang lưu…')
@@ -131,6 +136,18 @@ function App() {
           <label className="sr-only" htmlFor="email-content">Nội dung email marketing</label>
           <textarea id="email-content" value={content} onChange={(event) => setContent(event.target.value)} spellCheck="true" />
 
+          <div className="cta-settings">
+            <p>Nội dung email được căn đều hai lề. CTA trong phần iSSACC nằm dưới nội dung và ảnh, rộng bằng toàn bộ section.</p>
+            {ctas.map(cta => <div className="cta-row" key={cta.index}>
+              <span>{cta.label}</span>
+              <div role="group" aria-label={`Căn nút ${cta.label}`}>
+                {[['left', 'Trái'], ['center', 'Giữa'], ['right', 'Phải']].map(([value, label]) =>
+                  <button type="button" key={value} aria-pressed={cta.align === value} onClick={() => alignCta(cta.index, value)}>{label}</button>
+                )}
+              </div>
+            </div>)}
+          </div>
+
           <div className="format-guide" aria-label="Hướng dẫn định dạng">
             <h2>Hướng dẫn định dạng</h2>
             <div className="guide-grid">
@@ -139,6 +156,7 @@ function App() {
               <code>📌 hoặc ✓ Nội dung</code><span>Dòng thông tin</span>
               <code>**Nội dung in đậm**</code><span>Chữ nhấn mạnh</span>
               <code>[CTA: Tên|https://...]</code><span>Nút liên kết</span>
+              <code>[CTA: Tên|https://...|center]</code><span>Căn nút: left / center / right</span>
             </div>
           </div>
 

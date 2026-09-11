@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { DEFAULT_CONTENT, DEFAULT_IMAGES } from './defaultContent'
 import { buildEmail, parseCta } from './emailTemplate'
+import ImageUploadField from './ImageUploadField'
 
 const STORAGE_KEY = 'ismart-email-builder-v1'
 
@@ -39,6 +40,9 @@ function App() {
   const [imageSettingsOpen, setImageSettingsOpen] = useState(false)
   const [previewVersion, setPreviewVersion] = useState(0)
   const toastTimer = useRef(null)
+  const [uploading, setUploading] = useState({})
+  const imagesUploading = Object.values(uploading).some(Boolean)
+  const setUploadBusy = (slot, busy) => setUploading(current => ({ ...current, [slot]: busy }))
 
   const email = useMemo(() => buildEmail(content, images), [content, images, previewVersion])
   const ctas = content.split('\n').map((line, index) => ({ ...parseCta(line), index })).filter(cta => cta.label)
@@ -50,8 +54,12 @@ function App() {
   useEffect(() => {
     setSaveState('Đang lưu…')
     const timer = window.setTimeout(() => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ content, images }))
-      setSaveState('Đã lưu tự động')
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ content, images }))
+        setSaveState('Đã lưu tự động')
+      } catch {
+        setSaveState('Chưa lưu được trên máy')
+      }
     }, 450)
     return () => window.clearTimeout(timer)
   }, [content, images])
@@ -164,17 +172,16 @@ function App() {
             <button type="button" className="settings-trigger" onClick={() => setImageSettingsOpen((value) => !value)} aria-expanded={imageSettingsOpen}>
               <span>Cài đặt hình ảnh</span><Icon name="chevron" />
             </button>
-            {imageSettingsOpen && (
-              <div className="settings-body">
-                <label>Banner<input type="url" value={images.banner} onChange={(event) => updateImage('banner', event.target.value)} /></label>
-                <label>Ảnh minh họa lợi ích<input type="url" value={images.benefit} onChange={(event) => updateImage('benefit', event.target.value)} /></label>
-                <label>Mascot đăng ký<input type="url" value={images.mascot} onChange={(event) => updateImage('mascot', event.target.value)} /></label>
-              </div>
-            )}
+            <div className="settings-body" hidden={!imageSettingsOpen}>
+              <p className="image-storage-note">Chọn ảnh từ máy để tự lưu vào kho ảnh và chèn vào email. Ảnh được chia sẻ qua link công khai.</p>
+              <ImageUploadField slot="banner" label="Banner" value={images.banner} onChange={updateImage} onBusyChange={setUploadBusy} />
+              <ImageUploadField slot="benefit" label="Ảnh minh họa lợi ích" value={images.benefit} onChange={updateImage} onBusyChange={setUploadBusy} />
+              <ImageUploadField slot="mascot" label="Mascot iSSACC" value={images.mascot} onChange={updateImage} onBusyChange={setUploadBusy} />
+            </div>
           </div>
 
           <div className="editor-actions">
-            <button type="button" className="button secondary" onClick={resetSample}><Icon name="refresh" />Dùng nội dung mẫu</button>
+            <button type="button" className="button secondary" disabled={imagesUploading} onClick={resetSample}><Icon name="refresh" />Dùng nội dung mẫu</button>
             <button type="button" className="button orange" onClick={() => { setPreviewVersion((value) => value + 1); showToast('Đã cập nhật bản xem trước') }}>Tạo bản xem trước</button>
           </div>
         </section>
@@ -189,8 +196,8 @@ function App() {
               </div>
             </div>
             <div className="preview-actions">
-              <button type="button" className="button secondary compact" onClick={downloadHtml}><Icon name="download" />Tải HTML</button>
-              <button type="button" className="button primary compact" onClick={copyForGmail}><Icon name="copy" />Sao chép cho Gmail</button>
+              <button type="button" className="button secondary compact" disabled={imagesUploading} onClick={downloadHtml}><Icon name="download" />Tải HTML</button>
+              <button type="button" className="button primary compact" disabled={imagesUploading} onClick={copyForGmail}><Icon name="copy" />{imagesUploading ? 'Đang tải ảnh…' : 'Sao chép cho Gmail'}</button>
             </div>
           </div>
 

@@ -108,8 +108,26 @@ textarea:focus, input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px r
 .settings-trigger svg { transition: transform .18s ease; }
 .image-settings.is-open .settings-trigger svg { transform: rotate(180deg); }
 .settings-body { display: grid; gap: 10px; padding: 0 13px 13px; }
+.settings-body[hidden] { display: none; }
+.image-storage-note { margin:0; color:var(--muted); font-size:12px; line-height:19px; }
+.image-upload-field { padding:12px 0; border-top:1px solid var(--border); min-width:0; }
+.image-field-title { margin-bottom:8px; color:var(--navy); font-size:13px; font-weight:700; }
+.image-dropzone { display:flex; align-items:center; gap:12px; width:100%; min-height:92px; padding:12px; text-align:left; border:1px dashed #9bbfe0; border-radius:9px; background:#f3f9fe; color:var(--navy); }
+.image-dropzone:hover, .image-dropzone.is-dragging { border-color:var(--blue); background:#e7f3fe; }
+.image-dropzone:focus-visible { outline:3px solid rgba(8,112,197,.25); outline-offset:2px; }
+.image-dropzone > span { min-width:0; }
+.image-dropzone strong { display:block; font-size:12px; line-height:19px; }
+.image-dropzone small { display:block; margin-top:4px; font-size:11px; line-height:17px; color:var(--muted); }
+.upload-thumbnail { width:64px; height:64px; object-fit:contain; flex:none; background:#fff; border-radius:6px; }
+.image-url-label { margin-top:9px; }
+.upload-success, .upload-error, .upload-status { margin:8px 0 0; font-size:12px; line-height:18px; overflow-wrap:anywhere; }
+.upload-success { color:#137449; }
+.upload-error { color:#b42318; }
+.upload-status { color:var(--muted); }
+button:disabled, input:disabled { cursor:wait; opacity:.65; }
+.button:disabled:hover { transform:none; }
 .settings-body label { display: grid; gap: 5px; color: var(--muted); font-size: 11px; font-weight: 600; }
-.settings-body input { width: 100%; padding: 8px 10px; color: #27354b; background: #f8fafc; border: 1px solid #d6dfeb; border-radius: 7px; outline: none; font-size: 11px; }
+.settings-body input[type="url"] { width: 100%; min-width: 0; padding: 8px 10px; color: #27354b; background: #f8fafc; border: 1px solid #d6dfeb; border-radius: 7px; outline: none; font-size: 11px; }
 
 .editor-actions, .preview-actions, .device-switch { display: flex; align-items: center; }
 .editor-actions { justify-content: space-between; gap: 12px; margin-top: 16px; }

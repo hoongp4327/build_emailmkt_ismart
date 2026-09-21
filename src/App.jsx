@@ -5,9 +5,9 @@ import { BlockList } from './editor/BlockList.jsx'
 import { PreviewStage } from './editor/PreviewStage.jsx'
 import { Inspector } from './editor/Inspector.jsx'
 import { renderEmail } from './render/renderEmail.js'
-import { createBlock } from './model/defaults.js'
+import { createBlock, createDefaultDoc } from './model/defaults.js'
 import { migrateV1toV2 } from './model/migrate.js'
-import ileadOfferDoc from './templates/ilead-offer.json'
+import { TEMPLATES, paymentNoticeDoc, ileadOfferDoc } from './templates/index.js'
 
 const STORAGE_KEY_V2 = 'ismart-email-builder-v2'
 const STORAGE_KEY_V1 = 'ismart-email-builder-v1'
@@ -40,7 +40,7 @@ function loadInitialDoc() {
     console.warn('Lỗi migrate dữ liệu v1:', err)
   }
 
-  return ileadOfferDoc
+  return paymentNoticeDoc
 }
 
 export default function App() {
@@ -67,6 +67,21 @@ export default function App() {
 
   // Mobile tab chuyển đổi giữa [Danh sách khối] và [Xem trước] khi < 1024px
   const [mobileTab, setMobileTab] = useState('editor') // 'editor' | 'preview'
+  const [templateMenuOpen, setTemplateMenuOpen] = useState(false)
+  const templateMenuRef = useRef(null)
+
+  // Đóng dropdown mẫu email khi click ra ngoài
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (templateMenuRef.current && !templateMenuRef.current.contains(e.target)) {
+        setTemplateMenuOpen(false)
+      }
+    }
+    if (templateMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [templateMenuOpen])
 
   // 1. Tự động bỏ chọn nếu block đang chọn không còn tồn tại (sau undo / xóa - Ràng buộc 7)
   useEffect(() => {
@@ -221,12 +236,23 @@ export default function App() {
     }), { immediate: true })
   }
 
-  // Khôi phục mẫu iLEAD ban đầu (kèm xác nhận - Ràng buộc 11)
-  function handleResetTemplate() {
-    if (window.confirm('Khôi phục mẫu iLEAD chuẩn? Mọi khối tự tạo hiện tại sẽ được thay bằng mẫu mặc định.')) {
-      resetHistory(JSON.parse(JSON.stringify(ileadOfferDoc)))
+  // Tải mẫu email có sẵn (kèm xác nhận)
+  function handleSelectTemplate(template) {
+    if (window.confirm(`Tải mẫu "${template.name}"? Mọi khối tự tạo hiện tại sẽ được thay bằng mẫu này.`)) {
+      resetHistory(JSON.parse(JSON.stringify(template.doc)))
       setSelectedBlockId(null)
-      showToast('Đã khôi phục mẫu email chuẩn')
+      setTemplateMenuOpen(false)
+      showToast(`✓ Đã tải mẫu: ${template.name}`)
+    }
+  }
+
+  // Khởi tạo trang trắng mới
+  function handleNewBlankDoc() {
+    if (window.confirm('Tạo email trống mới? Mọi khối hiện tại trên trang sẽ bị xóa.')) {
+      resetHistory(createDefaultDoc({}, []))
+      setSelectedBlockId(null)
+      setTemplateMenuOpen(false)
+      showToast('✓ Đã tạo email trống')
     }
   }
 
@@ -309,14 +335,50 @@ export default function App() {
         </div>
 
         <div className="topbar-actions">
-          <button
-            type="button"
-            className="button secondary compact"
-            title="Khôi phục lại mẫu iLEAD chuẩn"
-            onClick={handleResetTemplate}
-          >
-            Khôi phục mẫu
-          </button>
+          <div className="template-dropdown-wrapper" ref={templateMenuRef}>
+            <button
+              type="button"
+              className="button secondary compact template-btn"
+              title="Chọn mẫu email có sẵn hoặc làm mới"
+              onClick={() => setTemplateMenuOpen((prev) => !prev)}
+            >
+              <span>📋 Mẫu email</span>
+              <span className="dropdown-caret">▾</span>
+            </button>
+
+            {templateMenuOpen && (
+              <div className="template-menu-popover">
+                <div className="template-menu-header">Mẫu email có sẵn</div>
+                <div className="template-menu-list">
+                  {TEMPLATES.map((tmpl) => (
+                    <button
+                      key={tmpl.id}
+                      type="button"
+                      className="template-menu-item"
+                      onClick={() => handleSelectTemplate(tmpl)}
+                    >
+                      <div className="template-item-top">
+                        <span className="template-item-name">{tmpl.name}</span>
+                        {tmpl.badge && <span className="template-item-badge">{tmpl.badge}</span>}
+                      </div>
+                      <div className="template-item-desc">{tmpl.desc}</div>
+                    </button>
+                  ))}
+                  <div className="template-menu-divider" />
+                  <button
+                    type="button"
+                    className="template-menu-item"
+                    onClick={handleNewBlankDoc}
+                  >
+                    <div className="template-item-top">
+                      <span className="template-item-name">➕ Mẫu trống</span>
+                    </div>
+                    <div className="template-item-desc">Khởi tạo email trắng để tự kéo thả khối từ đầu</div>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
           <button
             type="button"
             className="button secondary compact"

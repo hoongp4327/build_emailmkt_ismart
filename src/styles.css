@@ -66,6 +66,97 @@ button { cursor: pointer; }
 
 .topbar-actions { display: flex; align-items: center; gap: 8px; }
 
+/* Template Selector Dropdown */
+.template-dropdown-wrapper {
+  position: relative;
+}
+.template-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.dropdown-caret {
+  font-size: 10px;
+  color: var(--muted);
+  margin-left: 2px;
+}
+.template-menu-popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 320px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(8, 46, 111, 0.15);
+  z-index: 100;
+  padding: 8px;
+  animation: templateFadeIn 0.15s ease;
+}
+@keyframes templateFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.template-menu-header {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  padding: 6px 10px 4px;
+}
+.template-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.template-menu-item {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 8px 10px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+.template-menu-item:hover {
+  background: #f0f7ff;
+  border-color: #d0e4ff;
+}
+.template-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 3px;
+}
+.template-item-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1c2e4a;
+}
+.template-item-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #eef7fc;
+  color: var(--blue);
+  border: 1px solid #c9e4fb;
+  white-space: nowrap;
+}
+.template-item-desc {
+  font-size: 11.5px;
+  line-height: 15px;
+  color: var(--muted);
+}
+.template-menu-divider {
+  height: 1px;
+  background: var(--border-light);
+  margin: 4px 0;
+}
+
 /* Nút bấm chuẩn */
 .button {
   min-height: 38px;

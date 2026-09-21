@@ -1,0 +1,215 @@
+{
+  "version": 2,
+  "settings": {
+    "width": 640,
+    "outerBg": "#eef7fc",
+    "contentBg": "#ffffff",
+    "fontFamily": "Arial, Helvetica, sans-serif",
+    "baseFontSize": 14,
+    "textColor": "#254166",
+    "radius": 0,
+    "palette": {
+      "navy": "#082e6f",
+      "blue": "#0870c5",
+      "orange": "#ff641c",
+      "lime": "#80b600",
+      "text": "#254166",
+      "pale": "#eef7fc"
+    }
+  },
+  "blocks": [
+    {
+      "id": "hsk1-banner",
+      "type": "image",
+      "props": {
+        "src": "https://res.cloudinary.com/vcmbh1dy/image/upload/v1789115397/emailmkt-ismart/banner-1f69d87d-2ab5-4e1c-979d-435e30def71e.jpg",
+        "alt": "iLEAD",
+        "width": "full",
+        "align": "center",
+        "radius": 0
+      },
+      "style": {
+        "paddingTop": 0,
+        "paddingBottom": 0,
+        "paddingX": 0
+      }
+    },
+    {
+      "id": "hsk1-intro",
+      "type": "text",
+      "props": {
+        "html": "<p>Kính gửi Quý học viên,</p><p>iSMART Education chân thành cảm ơn Quý học viên đã đăng ký tham gia khóa học Tiếng Trung cơ bản - HSK1 dành cho CBNV EQUEST.</p><p>Trung tâm xin gửi một số thông tin quan trọng trước khi khai giảng khóa học:</p>"
+      },
+      "style": {
+        "paddingTop": 27,
+        "paddingBottom": 15,
+        "paddingX": 34,
+        "align": "justify"
+      }
+    },
+    {
+      "id": "hsk1-info-class",
+      "type": "infoCard",
+      "props": {
+        "title": "I. THÔNG TIN LỚP HỌC",
+        "headerBg": "#082e6f",
+        "headerColor": "#ffffff",
+        "bodyBlocks": [
+          {
+            "id": "hsk1-info-list",
+            "type": "list",
+            "props": {
+              "marker": "•",
+              "markerColor": "#ff641c",
+              "items": [
+                { "html": "📚 Lớp: HSK1 ONLINE" },
+                { "html": "📅 Khai giảng dự kiến: /2026" },
+                { "html": "🕒 Lịch học dự kiến" }
+              ]
+            },
+            "style": {
+              "paddingTop": 4,
+              "paddingBottom": 4,
+              "paddingX": 0
+            }
+          }
+        ]
+      },
+      "style": {
+        "paddingTop": 0,
+        "paddingBottom": 28,
+        "paddingX": 34
+      }
+    },
+    {
+      "id": "hsk1-tuition",
+      "type": "imageText",
+      "props": {
+        "imagePosition": "right",
+        "imageWidth": 160,
+        "src": "https://res.cloudinary.com/vcmbh1dy/image/upload/v1787128368/benefit-02_optimize.png",
+        "alt": "Minh họa lợi ích",
+        "boxed": false,
+        "contentBlocks": [
+          {
+            "id": "hsk1-tuition-heading",
+            "type": "heading",
+            "props": {
+              "html": "II. HỌC PHÍ VÀ THANH TOÁN",
+              "level": 2,
+              "color": "#082e6f",
+              "fontSize": 21
+            },
+            "style": {
+              "paddingTop": 0,
+              "paddingBottom": 10,
+              "paddingX": 0
+            }
+          },
+          {
+            "id": "hsk1-tuition-text",
+            "type": "text",
+            "props": {
+              "html": "<p>💰 <strong>Học phí khóa HSK1: 2.420.000 VNĐ</strong></p><p>Để được ưu tiên giữ chỗ và khung giờ đã đăng ký, học viên vui lòng hoàn tất học phí trước thời hạn quy định. Hình thức thanh toán: Chuyển khoản học phí</p>"
+            },
+            "style": {
+              "paddingTop": 0,
+              "paddingBottom": 0,
+              "paddingX": 0,
+              "align": "left"
+            }
+          }
+        ]
+      },
+      "style": {
+        "paddingTop": 26,
+        "paddingBottom": 28,
+        "paddingX": 34,
+        "bg": "#eef7fc"
+      }
+    },
+    {
+      "id": "hsk1-payment",
+      "type": "payment",
+      "props": {
+        "title": "THÔNG TIN CHUYỂN KHOẢN",
+        "bankName": "Ngân hàng ACB - Chi nhánh Đông Đô - PGD Hoàng Đạo Thúy",
+        "accountNo": "50129677",
+        "accountName": "CÔNG TY CỔ PHẦN GIÁO DỤC ISMART HÀ NỘI",
+        "transferContent": "[Tên học viên] chuyen khoan tien khoa hoc ngoai ngu",
+        "qrImageUrl": "https://res.cloudinary.com/vcmbh1dy/image/upload/v1789956848/emailmkt-ismart/mascot-f8f081dc-6d9f-421d-8fbd-2c47ecaefc17.png",
+        "qrSize": 200,
+        "layout": "qr-left",
+        "note": "<p>Lưu ý: Anh/Chị vui lòng ghi CHÍNH XÁC nội dung CK. Sau khi CK, Anh/Chị gửi lại ảnh xác nhận giao dịch qua Zalo: 0967 417 895 để Trung tâm cập nhật danh sách học viên.</p><p>⏰ Hạn thanh toán: /2026</p>",
+        "accentColor": "#082e6f"
+      },
+      "style": {
+        "paddingTop": 25,
+        "paddingBottom": 25,
+        "paddingX": 34,
+        "bg": "#ffffff"
+      }
+    },
+    {
+      "id": "hsk1-materials",
+      "type": "infoCard",
+      "props": {
+        "title": "III. TÀI LIỆU VÀ DỤNG CỤ HỌC TẬP",
+        "headerBg": "#082e6f",
+        "headerColor": "#ffffff",
+        "bodyBlocks": [
+          {
+            "id": "hsk1-materials-text",
+            "type": "text",
+            "props": {
+              "html": "<p>📚 Giáo trình khóa học: Giáo trình chuẩn HSK 1<br>(Quý Học viên vui lòng mua giáo trình bản in sớm nhằm chuẩn bị tốt nhất cho quá trình học tập và thực hành trên lớp.)<br>📄 Đối với tài liệu bổ trợ và bài tập giáo viên sẽ cung cấp miễn phí dưới dạng bản mềm trong suốt quá trình học.</p><p>📝 Dụng cụ cần chuẩn bị:<br>• Vở ô ly<br>• Bút viết</p><p>Mọi thắc mắc hoặc cần hỗ trợ thêm, Anh/Chị vui lòng liên hệ hotline:<br>0967 417 895</p><p>Rất mong được đồng hành cùng Quý học viên trong hành trình chinh phục tiếng Trung.</p><p>Trân trọng.</p>"
+            },
+            "style": {
+              "paddingTop": 0,
+              "paddingBottom": 8,
+              "paddingX": 0,
+              "align": "justify"
+            }
+          },
+          {
+            "id": "hsk1-materials-cta",
+            "type": "button",
+            "props": {
+              "label": "Link sách tham khảo",
+              "url": "https://www.fahasa.com/combo-sach-giao-trinh-chuan-hsk-1-sach-bai-tap-giao-trinh-chuan-hsk-1-bo-2-cuon-tai-ban-2023.html?srsltid=AfmBOoqXRMNzJT45B3O9zbPrcEUaoTJR5zDt9s7ox77CmC_XQuFW9uJq",
+              "align": "center",
+              "variant": "solid",
+              "color": "#0870c5"
+            },
+            "style": {
+              "paddingTop": 4,
+              "paddingBottom": 8,
+              "paddingX": 0
+            }
+          }
+        ]
+      },
+      "style": {
+        "paddingTop": 25,
+        "paddingBottom": 25,
+        "paddingX": 34
+      }
+    },
+    {
+      "id": "hsk1-footer",
+      "type": "footer",
+      "props": {
+        "closingLine": "Đăng ký ngay hôm nay, để con tự tin chinh phục thế giới bằng tiếng Anh",
+        "signOff": "Trân trọng,",
+        "bg": "#082e6f",
+        "color": "#ffffff"
+      },
+      "style": {
+        "paddingTop": 25,
+        "paddingBottom": 34,
+        "paddingX": 34,
+        "align": "center"
+      }
+    }
+  ]
+}

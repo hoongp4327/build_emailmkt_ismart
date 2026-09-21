@@ -6,6 +6,7 @@ import { renderEmail } from '../src/render/renderEmail.js'
 import { createBlock, createDefaultDoc, BRAND_COLORS } from '../src/model/defaults.js'
 import { migrateV1toV2 } from '../src/model/migrate.js'
 import ileadOfferDoc from '../src/templates/ilead-offer.json' with { type: 'json' }
+import paymentNoticeDoc from '../src/templates/payment-notice.json' with { type: 'json' }
 
 // 1. Test Round-trip Text <-> HTML với cú pháp **đậm**, ký tự & < > và tiếng Việt (Ràng buộc 1)
 test('Round-trip Text <-> HTML: Giữ nguyên vẹn chữ đậm, ký tự đặc biệt và tiếng Việt không double-escape', () => {
@@ -195,3 +196,26 @@ test('Tải mẫu mặc định: ileadOfferDoc có đầy đủ các block chu�
   assert.ok(rendered.document.includes('THÔNG TIN CHƯƠNG TRÌNH'))
   assert.ok(rendered.document.includes('ĐĂNG KÝ THAM GIA'))
 })
+
+// 9. Test Mẫu Thông báo học phí & QR Chuyển khoản (payment-notice.json)
+test('Mẫu Thông báo học phí & Chuyển khoản (payment-notice.json): Tương đương chính xác với HTML mẫu', () => {
+  assert.equal(paymentNoticeDoc.version, 2)
+  assert.equal(paymentNoticeDoc.settings.width, 640)
+  assert.ok(Array.isArray(paymentNoticeDoc.blocks))
+  assert.equal(paymentNoticeDoc.blocks.length, 7)
+
+  const rendered = renderEmail(paymentNoticeDoc)
+  assert.ok(rendered.document.includes('Kính gửi Quý học viên'), 'Phải chứa lời chào mở đầu')
+  assert.ok(rendered.document.includes('I. THÔNG TIN LỚP HỌC'), 'Phải chứa mục I. Thông tin lớp học')
+  assert.ok(rendered.document.includes('HSK1 ONLINE'), 'Phải chứa tên lớp HSK1 ONLINE')
+  assert.ok(rendered.document.includes('II. HỌC PHÍ VÀ THANH TOÁN'), 'Phải chứa mục II. Học phí')
+  assert.ok(rendered.document.includes('2.420.000 VNĐ'), 'Phải chứa số tiền học phí')
+  assert.ok(rendered.document.includes('THÔNG TIN CHUYỂN KHOẢN'), 'Phải chứa tiêu đề chuyển khoản')
+  assert.ok(rendered.document.includes('50129677'), 'Phải hiển thị nguyên văn STK ACB 50129677')
+  assert.ok(rendered.document.includes('CÔNG TY CỔ PHẦN GIÁO DỤC ISMART HÀ NỘI'), 'Phải chứa tên chủ tài khoản')
+  assert.ok(rendered.document.includes('III. TÀI LIỆU VÀ DỤNG CỤ HỌC TẬP'), 'Phải chứa mục III. Tài liệu')
+  assert.ok(rendered.document.includes('fahasa.com'), 'Phải chứa link sách Fahasa')
+  assert.ok(rendered.document.includes('Đăng ký ngay hôm nay'), 'Phải chứa thông điệp chân trang')
+  assert.ok(!rendered.document.includes('src=""'), 'Không được có thẻ img rỗng')
+})
+

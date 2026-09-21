@@ -155,7 +155,7 @@ export default function App() {
       compressImage(imageFile, { kind: 'image' })
         .then(async ({ file, warning }) => {
           if (warning) showToast(warning)
-          setImagesUploading(true)
+          setUploadBusy('global-paste', true)
           const resp = await fetch('/api/upload-image?kind=image', {
             method: 'POST',
             headers: { 'Content-Type': file.type },
@@ -181,13 +181,13 @@ export default function App() {
           showToast(err.message || 'Lỗi khi tải ảnh từ clipboard')
         })
         .finally(() => {
-          setImagesUploading(false)
+          setUploadBusy('global-paste', false)
         })
     }
 
     window.addEventListener('paste', handleGlobalPagePaste)
     return () => window.removeEventListener('paste', handleGlobalPagePaste)
-  }, [doc.blocks, selectedBlockId, setDoc, setImagesUploading])
+  }, [doc.blocks, selectedBlockId, setDoc, setUploadBusy])
 
   // 1. Tự động bỏ chọn nếu block đang chọn không còn tồn tại (sau undo / xóa - Ràng buộc 7)
   useEffect(() => {

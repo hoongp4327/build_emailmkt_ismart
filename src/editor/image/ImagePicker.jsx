@@ -32,6 +32,8 @@ export function ImagePicker({
   const pickerRef = useRef(null)
   const abortControllerRef = useRef(null)
   const lastFileRef = useRef(null)
+  const busyCallbackRef = useRef(onBusyChange)
+  busyCallbackRef.current = onBusyChange
 
   const [busy, setBusy] = useState(false)
   const [statusText, setStatusText] = useState('')
@@ -46,9 +48,9 @@ export function ImagePicker({
     (isBusy, text = '') => {
       setBusy(isBusy)
       setStatusText(text)
-      onBusyChange?.(isBusy)
+      busyCallbackRef.current?.(isBusy)
     },
-    [onBusyChange]
+    []
   )
 
   // Hủy request khi component unmount
@@ -57,10 +59,10 @@ export function ImagePicker({
       if (abortControllerRef.current) {
         abortControllerRef.current.abort()
         abortControllerRef.current = null
-        onBusyChange?.(false)
+        busyCallbackRef.current?.(false)
       }
     }
-  }, [onBusyChange])
+  }, [])
 
   // Kiểm tra URL link ngoài
   const isExternalUrl = Boolean(
@@ -73,7 +75,7 @@ export function ImagePicker({
   // Xử lý nén và tải ảnh lên Cloudinary
   const handleUploadFile = useCallback(
     async (fileToUpload) => {
-      if (!fileToUpload) return
+      if (!fileToUpload || abortControllerRef.current) return
 
       setError('')
       setWarning('')
@@ -86,6 +88,8 @@ export function ImagePicker({
         return
       }
 
+      const controller = new AbortController()
+      abortControllerRef.current = controller
       setBusyState(true, 'Đang nén ảnh...')
 
       let processedFile = fileToUpload
@@ -96,15 +100,20 @@ export function ImagePicker({
           setWarning(compressed.warning)
         }
       } catch (compErr) {
+        if (abortControllerRef.current !== controller) return
+        abortControllerRef.current = null
         setBusyState(false)
         setError(compErr.message || 'Lỗi khi xử lý nén ảnh.')
         return
       }
 
+      if (abortControllerRef.current !== controller) return
       setBusyState(true, 'Đang tải lên Cloudinary...')
-      const controller = new AbortController()
-      abortControllerRef.current = controller
-      const timeoutId = window.setTimeout(() => controller.abort(), 40000)
+      let timedOut = false
+      const timeoutId = window.setTimeout(() => {
+        timedOut = true
+        controller.abort()
+      }, 40000)
 
       try {
         const response = await fetch(`${UPLOAD_PATH}?kind=${kind}`, {
@@ -114,7 +123,8 @@ export function ImagePicker({
           signal: controller.signal,
         })
 
-        const data = await response.json().catch(() => null)
+        const data = await response.json()
+        if (abortControllerRef.current !== controller) return
 
         if (!response.ok) {
           if (response.status === 429) {
@@ -136,15 +146,16 @@ export function ImagePicker({
         setRecentImages(updatedRecent)
         setBusyState(false, '✓ Đã tải ảnh lên thành công.')
       } catch (err) {
+        if (abortControllerRef.current !== controller) return
         setBusyState(false)
         if (err.name === 'AbortError') {
-          setError('Tải ảnh quá lâu. Vui lòng kiểm tra kết nối mạng và thử lại.')
+          setError(timedOut ? 'Tải ảnh quá lâu. Vui lòng kiểm tra kết nối mạng và thử lại.' : 'Đã hủy tải ảnh.')
         } else {
           setError(err.message || 'Không thể tải ảnh lên kho lưu trữ.')
         }
       } finally {
         window.clearTimeout(timeoutId)
-        abortControllerRef.current = null
+        if (abortControllerRef.current === controller) abortControllerRef.current = null
       }
     },
     [kind, onChange, setBusyState]

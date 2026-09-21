@@ -232,11 +232,12 @@ export function BlockInspectors({
         <div className="inspector-field">
           <label>Hình ảnh</label>
           <ImagePicker
+            key={block.id}
             value={p.src || ''}
             onChange={(url) => updateProp('src', url)}
             kind="image"
             label="Khối ảnh"
-            onBusyChange={onBusyChange}
+            onBusyChange={(busy) => onBusyChange?.(block.id, busy)}
             isSelectedBlock={true}
           />
         </div>
@@ -450,11 +451,12 @@ export function BlockInspectors({
         <div className="inspector-field">
           <label>Mã QR thanh toán</label>
           <ImagePicker
+            key={block.id}
             value={p.qrImageUrl || ''}
             onChange={(url) => updateProp('qrImageUrl', url)}
             kind="qr"
             label="Ảnh mã QR"
-            onBusyChange={onBusyChange}
+            onBusyChange={(busy) => onBusyChange?.(block.id, busy)}
             isSelectedBlock={true}
           />
         </div>
@@ -781,11 +783,12 @@ export function BlockInspectors({
         <div className="inspector-field">
           <label>Ảnh minh họa</label>
           <ImagePicker
+            key={block.id}
             value={p.src || ''}
             onChange={(url) => updateProp('src', url)}
             kind="image"
             label="Ảnh cột bên"
-            onBusyChange={onBusyChange}
+            onBusyChange={(busy) => onBusyChange?.(block.id, busy)}
             isSelectedBlock={true}
           />
         </div>

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react'
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { nanoid } from 'nanoid'
 import { useHistory } from './editor/useHistory.js'
 import { BlockList } from './editor/BlockList.jsx'
@@ -64,7 +64,13 @@ export default function App() {
   const toastTimer = useRef(null)
   const [uploading, setUploading] = useState({})
   const imagesUploading = Object.values(uploading).some(Boolean)
-  const setUploadBusy = (slot, busy) => setUploading((current) => ({ ...current, [slot]: busy }))
+  const setUploadBusy = useCallback((slot, busy) => setUploading((current) => {
+    if (Boolean(current[slot]) === busy) return current
+    const next = { ...current }
+    if (busy) next[slot] = true
+    else delete next[slot]
+    return next
+  }), [])
 
   // Mobile tab chuyển đổi giữa [Danh sách khối] và [Xem trước] khi < 1024px
   const [mobileTab, setMobileTab] = useState('editor') // 'editor' | 'preview'

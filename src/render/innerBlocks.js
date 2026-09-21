@@ -59,14 +59,20 @@ export function renderInnerBlock(block, context = {}) {
     }
 
     case 'image': {
-      const { src, alt = '', width, link } = block.props || {}
+      const { src, alt = '', width, link, radius = 0 } = block.props || {}
       if (!isValidHttpUrl(src)) return ''
-      const imgWidth = width === 'full' ? '100%' : (Number(width) || '100%')
+      const isFull = width === 'full' || Number(width) >= 640
+      const numWidth = isFull ? 640 : (Number(width) || 320)
+      const radiusVal = Number(radius) || 0
+      const radiusStyle = `border-radius:${radiusVal}px;`
+      const imgStyle = isFull
+        ? `display:block;width:100%;max-width:640px;height:auto;margin:0 auto;border:0;${radiusStyle}`
+        : `display:block;width:${numWidth}px;max-width:100%;height:auto;margin:0 auto;border:0;${radiusStyle}`
       const imgHtml = renderSafeImg({
         src,
         alt,
-        width: typeof width === 'number' ? width : undefined,
-        style: `display:block;max-width:100%;width:${imgWidth};height:auto;margin:0 auto;border:0;`,
+        width: numWidth,
+        style: imgStyle,
       })
       if (!imgHtml) return ''
       return link && safeUrl(link) !== '#'

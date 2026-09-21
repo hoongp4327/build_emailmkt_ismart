@@ -895,26 +895,190 @@ button { cursor: pointer; }
   line-height: 14px;
   color: var(--muted);
 }
-.image-url-label {
-  display: none;
+.clear-image-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
+  font-size: 11px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all .15s ease;
 }
-.upload-success {
-  margin: 6px 0 0;
-  font-size: 11.5px;
-  color: #15965f;
-  font-weight: 500;
+.clear-image-btn:hover {
+  background: #fecaca;
+  transform: scale(1.1);
 }
-.upload-error {
-  margin: 6px 0 0;
-  font-size: 11.5px;
-  color: #c92a2a;
-  font-weight: 500;
+
+/* Image URL Row & Warnings */
+.image-url-input-row {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
-.upload-status {
-  margin: 6px 0 0;
+.sub-field-label {
   font-size: 11.5px;
-  color: var(--blue);
   font-weight: 500;
+  color: #4b6382;
+}
+.url-input-wrapper input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #cbd6e3;
+  border-radius: 6px;
+  font-size: 12.5px;
+  outline: none;
+}
+.url-input-wrapper input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 2px rgba(8, 112, 197, 0.12);
+}
+
+.external-url-notice {
+  font-size: 11px;
+  line-height: 15px;
+  color: #92400e;
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+  border-radius: 6px;
+  padding: 6px 8px;
+  margin-top: 6px;
+}
+.image-picker-warning {
+  font-size: 11px;
+  line-height: 15px;
+  color: #9a3412;
+  background: #ffedd5;
+  border: 1px solid #fed7aa;
+  border-radius: 6px;
+  padding: 6px 8px;
+  margin-top: 6px;
+}
+.field-warning-hint {
+  display: block;
+  font-size: 11px;
+  color: #b45309;
+  margin-top: 4px;
+}
+
+/* Recent Images Grid */
+.recent-images-section {
+  margin-top: 8px;
+}
+.toggle-recent-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 5px 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #334155;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background .12s ease;
+}
+.toggle-recent-btn:hover {
+  background: #e2e8f0;
+}
+.recent-images-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 6px;
+  padding: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+.recent-thumbnail-btn {
+  aspect-ratio: 1;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  overflow: hidden;
+  padding: 0;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .1s ease, border-color .1s ease;
+}
+.recent-thumbnail-btn:hover {
+  transform: scale(1.05);
+  border-color: var(--blue);
+}
+.recent-thumbnail-btn.selected {
+  border: 2px solid var(--blue);
+}
+.recent-thumbnail-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Upload Status Message & Retry */
+.upload-status-msg {
+  font-size: 11.5px;
+  margin-top: 6px;
+  padding: 6px 8px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.upload-status-msg.success {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+.upload-status-msg.error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+.retry-btn {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border: 1px solid #ef4444;
+  background: #fff;
+  color: #b91c1c;
+  border-radius: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.retry-btn:hover {
+  background: #fee2e2;
+}
+
+/* Custom Width Row */
+.custom-width-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.custom-width-row .sub-label {
+  font-size: 11.5px;
+  color: #4b6382;
+}
+.custom-width-row input {
+  width: 85px;
+  padding: 4px 8px;
+  font-size: 12px;
+  border: 1px solid #cbd6e3;
+  border-radius: 5px;
 }
 
 

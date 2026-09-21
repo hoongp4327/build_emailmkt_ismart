@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { ColorField } from './SettingsInspector.jsx'
 import ImageUploadField from '../../ImageUploadField.jsx'
+import { ImagePicker } from '../image/index.js'
 import { htmlToText, textToHtml } from '../textFormat.js'
 import { createBlock, BRAND_COLORS } from '../../model/defaults.js'
 import { RichTextField } from '../richText/index.js'
@@ -229,40 +230,41 @@ export function BlockInspectors({
     return (
       <div className="inspector-form">
         <div className="inspector-field">
-          <label>Đường dẫn ảnh (URL HTTPS)</label>
-          <input
-            type="url"
+          <label>Hình ảnh</label>
+          <ImagePicker
             value={p.src || ''}
-            placeholder="https://res.cloudinary.com/..."
-            onChange={(e) => updateProp('src', e.target.value)}
-          />
-        </div>
-
-        <div className="inspector-field">
-          <label>Hoặc tải ảnh từ máy tính (Cloudinary)</label>
-          <ImageUploadField
-            slot="banner"
-            label="Chọn ảnh từ máy"
-            value={p.src || ''}
-            onChange={(_, url) => updateProp('src', url)}
+            onChange={(url) => updateProp('src', url)}
+            kind="image"
+            label="Khối ảnh"
             onBusyChange={onBusyChange}
+            isSelectedBlock={true}
           />
         </div>
 
         <div className="inspector-field">
-          <label>Mô tả ảnh (Alt text - quan trọng cho email)</label>
+          <label>Mô tả ảnh (Alt text - bảo vệ độ tin cậy email)</label>
           <input
             type="text"
             value={p.alt || ''}
             placeholder="Mô tả nội dung bức ảnh..."
             onChange={(e) => updateProp('alt', e.target.value)}
           />
+          {!p.alt?.trim() && (
+            <span className="field-warning-hint">
+              ⚠️ Thiếu mô tả ảnh (alt text) có thể làm giảm độ tin cậy của email.
+            </span>
+          )}
         </div>
 
         <div className="inspector-field">
           <label>Kích thước ảnh</label>
           <div className="btn-group">
-            {[['full', 'Tràn viền (640px)'], ['320', 'Vừa (320px)'], ['180', 'Nhỏ (180px)']].map(([val, label]) => (
+            {[
+              ['full', 'Tràn viền (640px)'],
+              ['480', 'Lớn (480px)'],
+              ['320', 'Vừa (320px)'],
+              ['180', 'Nhỏ (180px)'],
+            ].map(([val, label]) => (
               <button
                 key={val}
                 type="button"
@@ -273,6 +275,30 @@ export function BlockInspectors({
               </button>
             ))}
           </div>
+          <div className="custom-width-row mt-1">
+            <span className="sub-label">Hoặc nhập chiều rộng (px, tối đa 640):</span>
+            <input
+              type="number"
+              min={40}
+              max={640}
+              value={p.width === 'full' ? 640 : (Number(p.width) || 640)}
+              onChange={(e) => {
+                const val = Math.min(640, Math.max(40, Number(e.target.value) || 40))
+                updateProp('width', val)
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="inspector-field">
+          <label>Bo góc ảnh ({p.radius ?? 0}px)</label>
+          <input
+            type="range"
+            min={0}
+            max={24}
+            value={p.radius ?? 0}
+            onChange={(e) => updateProp('radius', Number(e.target.value))}
+          />
         </div>
 
         <div className="inspector-field">
@@ -422,22 +448,14 @@ export function BlockInspectors({
           />
         </div>
         <div className="inspector-field">
-          <label>URL ảnh mã QR (do bạn tự tải lên)</label>
-          <input
-            type="url"
+          <label>Mã QR thanh toán</label>
+          <ImagePicker
             value={p.qrImageUrl || ''}
-            placeholder="Dán link ảnh QR từ ngân hàng..."
-            onChange={(e) => updateProp('qrImageUrl', e.target.value)}
-          />
-        </div>
-        <div className="inspector-field">
-          <label>Hoặc tải ảnh QR từ máy</label>
-          <ImageUploadField
-            slot="mascot"
-            label="Tải ảnh QR"
-            value={p.qrImageUrl || ''}
-            onChange={(_, url) => updateProp('qrImageUrl', url)}
+            onChange={(url) => updateProp('qrImageUrl', url)}
+            kind="qr"
+            label="Ảnh mã QR"
             onBusyChange={onBusyChange}
+            isSelectedBlock={true}
           />
         </div>
         <div className="inspector-field">
@@ -761,23 +779,14 @@ export function BlockInspectors({
         </div>
 
         <div className="inspector-field">
-          <label>URL ảnh minh họa</label>
-          <input
-            type="url"
+          <label>Ảnh minh họa</label>
+          <ImagePicker
             value={p.src || ''}
-            placeholder="Dán link ảnh HTTPS..."
-            onChange={(e) => updateProp('src', e.target.value)}
-          />
-        </div>
-
-        <div className="inspector-field">
-          <label>Hoặc tải ảnh từ máy</label>
-          <ImageUploadField
-            slot="benefit"
-            label="Tải ảnh cột bên"
-            value={p.src || ''}
-            onChange={(_, url) => updateProp('src', url)}
+            onChange={(url) => updateProp('src', url)}
+            kind="image"
+            label="Ảnh cột bên"
             onBusyChange={onBusyChange}
+            isSelectedBlock={true}
           />
         </div>
 

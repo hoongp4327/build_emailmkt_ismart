@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto'
-import { MAX_IMAGE_BYTES, IMAGE_TYPES, IMAGE_SLOTS, UPLOAD_PATH } from '../../src/uploadPolicy.js'
+import { MAX_IMAGE_BYTES, IMAGE_TYPES, IMAGE_KINDS, UPLOAD_PATH } from '../../src/uploadPolicy.js'
 
 const json = (status, body, headers = {}) => Response.json(body, {
   status,
@@ -45,8 +45,8 @@ export function createUploadHandler({ env = process.env, fetchImpl = fetch } = {
     if (request.method !== 'POST') return json(405, { error: 'Yêu cầu không hợp lệ.' }, { Allow: 'POST' })
     if (request.headers.get('origin') !== url.origin) return json(403, { error: 'Vui lòng tải ảnh từ trang Email Builder.' })
 
-    const slot = url.searchParams.get('slot')
-    if (!IMAGE_SLOTS.includes(slot)) return json(400, { error: 'Vị trí ảnh không hợp lệ.' })
+    const kind = url.searchParams.get('kind') || url.searchParams.get('slot')
+    if (!IMAGE_KINDS.includes(kind)) return json(400, { error: 'Loại ảnh không hợp lệ.' })
     const contentType = request.headers.get('content-type')?.split(';')[0].trim().toLowerCase()
     if (!IMAGE_TYPES.includes(contentType)) return json(415, { error: 'Chỉ hỗ trợ ảnh JPG, PNG và WebP.' })
     if (Number(request.headers.get('content-length')) > MAX_IMAGE_BYTES) return json(413, { error: 'Ảnh vượt quá 4 MB.' })
@@ -64,9 +64,9 @@ export function createUploadHandler({ env = process.env, fetchImpl = fetch } = {
     if (!bytes.length || detectImageType(bytes) !== contentType) return json(415, { error: 'File không phải ảnh JPG, PNG hoặc WebP hợp lệ.' })
 
     const params = {
-      folder: 'emailmkt-ismart',
+      folder: `emailmkt-ismart/${kind}`,
       overwrite: 'false',
-      public_id: `${slot}-${randomUUID()}`,
+      public_id: `${kind}-${randomUUID()}`,
       timestamp: String(Math.floor(Date.now() / 1000)),
     }
     const signatureInput = Object.keys(params).sort().map(key => `${key}=${params[key]}`).join('&')
@@ -75,7 +75,7 @@ export function createUploadHandler({ env = process.env, fetchImpl = fetch } = {
     for (const [key, value] of Object.entries(params)) form.append(key, value)
     form.append('api_key', apiKey)
     form.append('signature', signature)
-    form.append('file', new Blob([bytes], { type: contentType }), `${slot}.${contentType === 'image/jpeg' ? 'jpg' : contentType.split('/')[1]}`)
+    form.append('file', new Blob([bytes], { type: contentType }), `${kind}.${contentType === 'image/jpeg' ? 'jpg' : contentType.split('/')[1]}`)
 
     try {
       const response = await fetchImpl(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {

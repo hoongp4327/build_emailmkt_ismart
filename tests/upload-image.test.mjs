@@ -7,7 +7,7 @@ import { MAX_IMAGE_BYTES, validateImageFile } from '../src/uploadPolicy.js'
 const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a3ioAAAAASUVORK5CYII=', 'base64')
 const env = { CLOUDINARY_CLOUD_NAME: 'test-cloud', CLOUDINARY_API_KEY: 'test-key', CLOUDINARY_API_SECRET: 'test-secret' }
 const assetUrl = 'https://res.cloudinary.com/test-cloud/image/upload/v1/emailmkt-ismart/test.png'
-function request({ path = '/api/upload-image?slot=banner', method = 'POST', body = png, headers = {} } = {}) {
+function request({ path = '/api/upload-image?kind=banner', method = 'POST', body = png, headers = {} } = {}) {
   return new Request(`https://example.test${path}`, { method, headers: { origin: 'https://example.test', 'content-type': 'image/png', ...headers }, ...(method === 'POST' ? { body } : {}) })
 }
 test('upload signs server-side, preserves bytes and returns only a public URL', async () => {
@@ -18,7 +18,7 @@ test('upload signs server-side, preserves bytes and returns only a public URL', 
     const params = ['folder', 'overwrite', 'public_id', 'timestamp'].map(key => `${key}=${form.get(key)}`).join('&')
     assert.equal(form.get('signature'), createHash('sha256').update(params + env.CLOUDINARY_API_SECRET).digest('hex'))
     assert.equal(form.get('api_key'), env.CLOUDINARY_API_KEY)
-    assert.equal(form.get('folder'), 'emailmkt-ismart')
+    assert.equal(form.get('folder'), 'emailmkt-ismart/banner')
     assert.equal(form.get('overwrite'), 'false')
     assert.match(form.get('public_id'), /^banner-[a-f0-9-]+$/)
     ids.push(form.get('public_id'))
@@ -37,9 +37,9 @@ test('invalid requests never reach Cloudinary', async () => {
   const handler = createUploadHandler({ env, fetchImpl: () => { assert.fail('unexpected upload') } })
   const cases = [
     [{ method: 'GET' }, 405],
-    [{ path: '/.netlify/functions/upload-image?slot=banner' }, 404],
+    [{ path: '/.netlify/functions/upload-image?kind=banner' }, 404],
     [{ headers: { origin: 'https://other.test' } }, 403],
-    [{ path: '/api/upload-image?slot=unknown' }, 400],
+    [{ path: '/api/upload-image?kind=unknown' }, 400],
     [{ headers: { 'content-type': 'image/svg+xml' } }, 415],
     [{ headers: { 'content-type': 'image/jpeg' } }, 415],
     [{ body: Buffer.alloc(0) }, 415],

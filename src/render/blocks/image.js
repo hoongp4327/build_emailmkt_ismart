@@ -21,10 +21,16 @@ export function renderImageBlock(block, context = {}) {
   const paddingX = style.paddingX ?? (width === 'full' ? 0 : 34)
   const bg = style.bg || 'transparent'
 
-  const imgWidth = width === 'full' || width === 640 ? 640 : (Number(width) || 640)
-  const widthAttr = width === 'full' ? 640 : imgWidth
-  const radiusStyle = radius ? `border-radius:${Number(radius)}px;` : ''
-  const imgStyle = `display:block;width:100%;max-width:${imgWidth}px;height:auto;margin:0 auto;border:0;${radiusStyle}`
+  const isFull = width === 'full' || Number(width) >= 640
+  const numWidth = isFull ? 640 : (Number(width) || 320)
+  const widthAttr = numWidth
+  const radiusVal = Number(radius) || 0
+  const radiusStyle = `border-radius:${radiusVal}px;`
+
+  const margin = align === 'left' ? '0;' : (align === 'right' ? '0 0 0 auto;' : '0 auto;')
+  const imgStyle = isFull
+    ? `display:block;width:100%;max-width:640px;height:auto;margin:0 auto;border:0;${radiusStyle}`
+    : `display:block;width:${numWidth}px;max-width:100%;height:auto;margin:${margin}border:0;${radiusStyle}`
 
   const imgHtml = renderSafeImg({
     src,

@@ -129,9 +129,8 @@ export function renderSafeImg({ src, alt = '', width, style = '' }) {
   if (!isValidHttpUrl(src)) return ''
   const cleanSrc = escapeHtml(src.trim())
   const cleanAlt = escapeHtml(alt)
-  const widthAttr = width ? ` width="${escapeHtml(String(width))}"` : ''
-  const baseStyle = 'display:block;max-width:100%;height:auto;border:0;'
-  const finalStyle = style ? `${baseStyle};${style}` : baseStyle
+  const widthAttr = width !== undefined && width !== null ? ` width="${escapeHtml(String(width))}"` : ''
+  const finalStyle = style || 'display:block;max-width:100%;height:auto;border:0;'
 
   return `<img src="${cleanSrc}" alt="${cleanAlt}"${widthAttr} style="${escapeHtml(finalStyle)}">`
 }

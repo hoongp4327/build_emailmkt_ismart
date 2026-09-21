@@ -99,6 +99,23 @@ export function RichTextField({
         }
         return text
       },
+      handlePaste(view, event) {
+        const items = event.clipboardData?.items || []
+        for (const item of items) {
+          if (item.type.startsWith('image/')) {
+            event.preventDefault()
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(
+                new CustomEvent('ismart-toast', {
+                  detail: { message: 'Dùng khối Ảnh để chèn ảnh vào email' },
+                })
+              )
+            }
+            return true
+          }
+        }
+        return false
+      },
     },
     onUpdate({ editor: currentEditor }) {
       const newHtml = currentEditor.getHTML()

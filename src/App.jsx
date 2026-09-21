@@ -8,6 +8,7 @@ import { renderEmail } from './render/renderEmail.js'
 import { createBlock, createDefaultDoc } from './model/defaults.js'
 import { migrateV1toV2 } from './model/migrate.js'
 import { TEMPLATES, paymentNoticeDoc, ileadOfferDoc } from './templates/index.js'
+import { compressImage, addRecentImage } from './editor/image/index.js'
 
 const STORAGE_KEY_V2 = 'ismart-email-builder-v2'
 const STORAGE_KEY_V1 = 'ismart-email-builder-v1'
@@ -82,6 +83,111 @@ export default function App() {
       return () => document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [templateMenuOpen])
+
+  // Lắng nghe sự kiện toast toàn cục (ví dụ dán ảnh vào RichText)
+  useEffect(() => {
+    function handleCustomToast(e) {
+      if (e.detail?.message) {
+        showToast(e.detail.message, e.detail.action)
+      }
+    }
+    window.addEventListener('ismart-toast', handleCustomToast)
+    return () => window.removeEventListener('ismart-toast', handleCustomToast)
+  }, [])
+
+  // Bắt Ctrl+V toàn trang khi clipboard có image/* và không gõ trong input/textarea/contenteditable
+  useEffect(() => {
+    function handleGlobalPagePaste(e) {
+      const activeEl = document.activeElement
+      const isTyping =
+        activeEl &&
+        (activeEl.tagName === 'INPUT' ||
+          activeEl.tagName === 'TEXTAREA' ||
+          activeEl.isContentEditable ||
+          Boolean(activeEl.closest?.('[contenteditable="true"]')))
+
+      if (isTyping) return
+
+      // Nếu khối đang chọn là image, payment hoặc imageText thì ImagePicker của khối đó sẽ xử lý
+      const selectedBlock = doc.blocks.find((b) => b.id === selectedBlockId)
+      if (
+        selectedBlock &&
+        (selectedBlock.type === 'image' ||
+          selectedBlock.type === 'payment' ||
+          selectedBlock.type === 'imageText')
+      ) {
+        return
+      }
+
+      const items = e.clipboardData?.items || []
+      let imageFile = null
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          imageFile = item.getAsFile()
+          break
+        }
+      }
+
+      if (!imageFile) return
+
+      e.preventDefault()
+
+      // Tự động tạo khối image mới
+      const newImgBlock = createBlock('image')
+      setDoc(
+        (prev) => {
+          const blocks = [...prev.blocks]
+          if (!selectedBlockId) {
+            blocks.push(newImgBlock)
+          } else {
+            const idx = blocks.findIndex((b) => b.id === selectedBlockId)
+            if (idx === -1) blocks.push(newImgBlock)
+            else blocks.splice(idx + 1, 0, newImgBlock)
+          }
+          return { ...prev, blocks }
+        },
+        { immediate: true }
+      )
+
+      setSelectedBlockId(newImgBlock.id)
+      showToast('Đang xử lý ảnh từ clipboard...')
+
+      compressImage(imageFile, { kind: 'image' })
+        .then(async ({ file, warning }) => {
+          if (warning) showToast(warning)
+          setImagesUploading(true)
+          const resp = await fetch('/api/upload-image?kind=image', {
+            method: 'POST',
+            headers: { 'Content-Type': file.type },
+            body: file,
+          })
+          const data = await resp.json().catch(() => null)
+          if (!resp.ok || !data?.url?.startsWith('https://')) {
+            throw new Error(data?.error || 'Không thể tải ảnh lên kho lưu trữ.')
+          }
+          setDoc(
+            (prev) => ({
+              ...prev,
+              blocks: prev.blocks.map((b) =>
+                b.id === newImgBlock.id ? { ...b, props: { ...b.props, src: data.url } } : b
+              ),
+            }),
+            { immediate: true }
+          )
+          addRecentImage(data.url)
+          showToast('✓ Đã chèn ảnh thành công.')
+        })
+        .catch((err) => {
+          showToast(err.message || 'Lỗi khi tải ảnh từ clipboard')
+        })
+        .finally(() => {
+          setImagesUploading(false)
+        })
+    }
+
+    window.addEventListener('paste', handleGlobalPagePaste)
+    return () => window.removeEventListener('paste', handleGlobalPagePaste)
+  }, [doc.blocks, selectedBlockId, setDoc, setImagesUploading])
 
   // 1. Tự động bỏ chọn nếu block đang chọn không còn tồn tại (sau undo / xóa - Ràng buộc 7)
   useEffect(() => {

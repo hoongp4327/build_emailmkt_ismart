@@ -575,6 +575,117 @@ button { cursor: pointer; }
   color: #6b829d;
 }
 
+/* Visually Hidden Utility */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Image Upload Field inside Inspector */
+.image-upload-field {
+  margin-top: 2px;
+  min-width: 0;
+}
+.image-field-title {
+  display: none;
+}
+.image-dropzone {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 64px;
+  padding: 8px 10px;
+  text-align: left;
+  border: 1.5px dashed #b5cde6;
+  border-radius: 8px;
+  background: #f7fafc;
+  color: var(--navy);
+  transition: all .15s ease;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+.image-dropzone:hover, .image-dropzone.is-dragging {
+  border-color: var(--blue);
+  background: #eef6fd;
+}
+.image-dropzone:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+.upload-thumbnail {
+  width: 52px;
+  height: 52px;
+  max-width: 52px;
+  max-height: 52px;
+  object-fit: contain;
+  flex-shrink: 0;
+  background: #ffffff;
+  border: 1px solid #d4e2f0;
+  border-radius: 6px;
+  padding: 2px;
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(8, 46, 111, 0.08);
+}
+.upload-icon-box {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  background: #eef6fd;
+  border: 1px solid #d0e3f7;
+  border-radius: 6px;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.image-dropzone-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+  text-align: left;
+}
+.image-dropzone-info strong {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #1c2e4a;
+}
+.image-dropzone-info small {
+  font-size: 11px;
+  line-height: 14px;
+  color: var(--muted);
+}
+.image-url-label {
+  display: none;
+}
+.upload-success {
+  margin: 6px 0 0;
+  font-size: 11.5px;
+  color: #15965f;
+  font-weight: 500;
+}
+.upload-error {
+  margin: 6px 0 0;
+  font-size: 11.5px;
+  color: #c92a2a;
+  font-weight: 500;
+}
+.upload-status {
+  margin: 6px 0 0;
+  font-size: 11.5px;
+  color: var(--blue);
+  font-weight: 500;
+}
+
+
 .btn-group {
   display: flex;
   flex-wrap: wrap;

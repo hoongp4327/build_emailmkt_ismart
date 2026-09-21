@@ -44,8 +44,7 @@ function sanitizeStyles(styleAttr = '', fallbackFont = DEFAULT_FONT) {
     if (!ALLOWED_STYLES.has(prop) || !value) continue
 
     // Loại bỏ biểu thức nguy hiểm trong CSS (expression, url, javascript)
-    const lowerVal = value.toLowerCase()
-    if (lowerVal.includes('expression') || lowerVal.includes('javascript:') || lowerVal.includes('url(')) {
+    if (/(?:url\s*\(|expression\s*\(|javascript\s*:)/i.test(value)) {
       continue
     }
 

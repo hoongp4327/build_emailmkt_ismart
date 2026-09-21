@@ -91,8 +91,8 @@ test('Quy tắc ảnh: Không render <img> khi URL rỗng, không hợp lệ, ho
   assert.ok(!fragment.includes('src=""'), 'Tuyệt đối không có src="" rỗng')
 })
 
-// 4. Khối Payment: Thiếu QR vẫn render đầy đủ thông tin chuyển khoản dạng text
-test('Khối Payment: Thiếu QR vẫn render đầy đủ 100% bảng thông tin chuyển khoản', () => {
+// 4. Khối Payment: Thiếu QR vẫn render đầy đủ thông tin chuyển khoản dạng text (STK nguyên văn)
+test('Khối Payment: Thiếu QR vẫn render đầy đủ 100% bảng thông tin chuyển khoản và giữ nguyên văn STK', () => {
   const paymentDoc = createDefaultDoc({}, [
     createBlock('payment', {
       title: 'THÔNG TIN CHUYỂN KHOẢN HỌC PHÍ',
@@ -112,7 +112,9 @@ test('Khối Payment: Thiếu QR vẫn render đầy đủ 100% bảng thông ti
   assert.ok(!fragment.includes('<img'), 'Không render <img> khi không có QR')
   // Nhưng vẫn đủ các trường text
   assert.ok(fragment.includes('Ngân hàng Quân Đội (MB Bank)'))
-  assert.ok(fragment.includes('0987 654 321'))
+  // BẮT BUỘC: Giữ nguyên văn STK người dùng gõ, KHÔNG tự ý chèn khoảng trắng làm sai khi copy-paste
+  assert.ok(fragment.includes('0987654321'))
+  assert.ok(!fragment.includes('0987 654 321'), 'Không được tự động thêm khoảng trắng vào STK')
   assert.ok(fragment.includes('CONG TY CO PHAN ISMART'))
   assert.ok(fragment.includes('4.515.000 VNĐ'))
   assert.ok(fragment.includes('NGUYENVANA_LOP1A_0901234567'))
@@ -123,6 +125,42 @@ test('Khối Payment: Thiếu QR vẫn render đầy đủ 100% bảng thông ti
   assert.ok(plainText.includes('0987654321'))
   assert.ok(plainText.includes('4.515.000 VNĐ'))
   assert.ok(plainText.includes('NGUYENVANA_LOP1A_0901234567'))
+})
+
+// 4b. Sanitize thuộc tính: Chỉ giữ style hợp lệ và href an toàn (thẻ a); loại bỏ on*, class, id, url(), expression()
+test('Sanitize thuộc tính: Chỉ giữ style (whitelist) và href (thẻ a); loại bỏ class, id, on*, url(), expression()', () => {
+  const dirtyHtml = `
+    <p class="alert-box" id="p1" onclick="alert('hack')" data-attr="test" style="color:#0870c5; background-image:url('https://evil.com/leak'); font-size:16px; width:expression(alert(1));">
+      Đoạn văn an toàn
+      <strong id="strong1" onmouseover="steal()" style="font-weight:bold; cursor:pointer;">chữ đậm</strong>
+      <a href="https://example.com/ok" class="btn" id="link1" onclick="evil()" style="color:#ff641c;">Liên kết tốt</a>
+      <a href="javascript:alert('xss')" id="link2">Liên kết xấu</a>
+    </p>
+  `
+
+  const sanitized = sanitizeAndInlineRichText(dirtyHtml)
+
+  // Kiểm tra loại bỏ triệt để các thuộc tính cấm
+  assert.ok(!sanitized.includes('class='), 'Phải loại bỏ thuộc tính class')
+  assert.ok(!sanitized.includes('alert-box'), 'Phải loại bỏ giá trị class')
+  assert.ok(!sanitized.includes('id='), 'Phải loại bỏ thuộc tính id')
+  assert.ok(!sanitized.includes('onclick='), 'Phải loại bỏ thuộc tính onclick')
+  assert.ok(!sanitized.includes('onmouseover='), 'Phải loại bỏ thuộc tính onmouseover')
+  assert.ok(!sanitized.includes('data-attr='), 'Phải loại bỏ thuộc tính data-*')
+
+  // Kiểm tra loại bỏ url(), expression() trong style
+  assert.ok(!sanitized.includes('url('), 'Phải loại bỏ url() trong style')
+  assert.ok(!sanitized.includes('expression('), 'Phải loại bỏ expression() trong style')
+  assert.ok(!sanitized.includes('evil.com'), 'Không được rò rỉ URL trong style')
+
+  // Kiểm tra style hợp lệ được giữ lại
+  assert.ok(sanitized.includes('color:#0870c5'), 'Giữ lại color hợp lệ')
+  assert.ok(sanitized.includes('font-size:16px'), 'Giữ lại font-size hợp lệ')
+  assert.ok(sanitized.includes('font-weight:700'), 'Giữ lại font-weight 700')
+
+  // Thẻ a: href an toàn được giữ, javascript: bị loại/thay thế bằng fallback #
+  assert.ok(sanitized.includes('href="https://example.com/ok"'), 'Giữ href an toàn')
+  assert.ok(!sanitized.includes('href="javascript:'), 'Loại bỏ href javascript:')
 })
 
 // 5. Tính hợp chuẩn HTML email: Không có display:flex, display:grid; mọi <img> có width và alt

@@ -2,19 +2,6 @@ import { escapeHtml, renderHeadingText, resolveFontStack, isValidHttpUrl, render
 import { sanitizeAndInlineRichText } from '../richText.js'
 import { BRAND_COLORS } from '../../model/defaults.js'
 
-/**
- * Định dạng số tài khoản thành từng cụm 3-4 số cho dễ đọc.
- * @param {string} acc
- * @returns {string}
- */
-function formatAccountNo(acc = '') {
-  const trimmed = String(acc).trim()
-  if (trimmed.includes(' ')) return trimmed
-  const clean = trimmed.replace(/\s+/g, '')
-  if (clean.length <= 4) return clean
-  if (clean.length === 10) return `${clean.slice(0, 4)} ${clean.slice(4, 7)} ${clean.slice(7)}`
-  return clean.replace(/(\d{3,4})(?=\d)/g, '$1 ')
-}
 
 /**
  * Render khối Chuyển khoản QR thanh toán.
@@ -51,7 +38,7 @@ export function renderPaymentBlock(block, context = {}) {
   const numQrSize = Number(qrSize) || 200
 
   // 1. Cột thông tin chuyển khoản (luôn có)
-  const formattedAcc = formatAccountNo(accountNo)
+  const formattedAcc = accountNo ? escapeHtml(String(accountNo).trim()) : ''
   const formattedAmount = typeof amount === 'number' && amount > 0
     ? `${amount.toLocaleString('vi-VN')} VNĐ`
     : ''

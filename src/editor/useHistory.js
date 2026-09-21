@@ -23,9 +23,28 @@ export function useHistory(initialDoc) {
   const futureRef = useRef(future)
   futureRef.current = future
 
-  // Timer để debounce khi người dùng gõ phím liên tục
+  // Timer và snapshot đệm để debounce khi người dùng gõ phím liên tục
   const debounceTimerRef = useRef(null)
+  const pendingSnapshotRef = useRef(null)
   const lastSnapshotRef = useRef(initialDoc)
+
+  /**
+   * Đẩy ngay snapshot đang chờ debounce vào lịch sử (flush) trước khi hoàn tác.
+   */
+  const flushDebounce = useCallback(() => {
+    if (debounceTimerRef.current && pendingSnapshotRef.current) {
+      clearTimeout(debounceTimerRef.current)
+      debounceTimerRef.current = null
+      const snapshot = pendingSnapshotRef.current
+      pendingSnapshotRef.current = null
+      const nextPast = [...pastRef.current.slice(-(MAX_HISTORY_STEPS - 1)), snapshot]
+      setPast(nextPast)
+      pastRef.current = nextPast
+      setFuture([])
+      futureRef.current = []
+      lastSnapshotRef.current = docRef.current
+    }
+  }, [])
 
   /**
    * Cập nhật doc và lưu vào lịch sử (có debounce cho text hoặc lưu ngay lập tức).
@@ -42,6 +61,7 @@ export function useHistory(initialDoc) {
         if (debounceTimerRef.current) {
           clearTimeout(debounceTimerRef.current)
           debounceTimerRef.current = null
+          pendingSnapshotRef.current = null
         }
         setPast((prev) => [...prev.slice(-(MAX_HISTORY_STEPS - 1)), currentDoc])
         setFuture([])
@@ -49,12 +69,16 @@ export function useHistory(initialDoc) {
       } else if (debounce) {
         // Debounce gộp các lần gõ chữ trong 400ms thành 1 bước undo
         if (!debounceTimerRef.current) {
-          const snapshotBeforeTyping = currentDoc
+          pendingSnapshotRef.current = currentDoc
           debounceTimerRef.current = setTimeout(() => {
-            setPast((prev) => [...prev.slice(-(MAX_HISTORY_STEPS - 1)), snapshotBeforeTyping])
-            setFuture([])
-            lastSnapshotRef.current = docRef.current
+            const snapshot = pendingSnapshotRef.current
+            pendingSnapshotRef.current = null
             debounceTimerRef.current = null
+            if (snapshot) {
+              setPast((prev) => [...prev.slice(-(MAX_HISTORY_STEPS - 1)), snapshot])
+              setFuture([])
+              lastSnapshotRef.current = docRef.current
+            }
           }, 400)
         }
       } else {
@@ -69,13 +93,10 @@ export function useHistory(initialDoc) {
   }, [])
 
   /**
-   * Hoàn tác (Undo)
+   * Hoàn tác (Undo) - flush debounce trước khi lùi lịch sử (Ràng buộc 8)
    */
   const undo = useCallback(() => {
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current)
-      debounceTimerRef.current = null
-    }
+    flushDebounce()
 
     if (pastRef.current.length === 0) return
 
@@ -83,19 +104,17 @@ export function useHistory(initialDoc) {
     const newPast = pastRef.current.slice(0, pastRef.current.length - 1)
 
     setPast(newPast)
+    pastRef.current = newPast
     setFuture((prev) => [docRef.current, ...prev.slice(0, MAX_HISTORY_STEPS - 1)])
     setDocState(previous)
     lastSnapshotRef.current = previous
-  }, [])
+  }, [flushDebounce])
 
   /**
    * Làm lại (Redo)
    */
   const redo = useCallback(() => {
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current)
-      debounceTimerRef.current = null
-    }
+    flushDebounce()
 
     if (futureRef.current.length === 0) return
 

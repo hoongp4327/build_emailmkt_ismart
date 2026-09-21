@@ -3,7 +3,7 @@ import { escapeHtml, safeUrl, resolveFontStack } from './helpers.js'
 import { BRAND_COLORS, DEFAULT_FONT } from '../model/defaults.js'
 
 const ALLOWED_TAGS = new Set([
-  'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'span', 'a',
+  'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'span', 'a', 'mark',
 ])
 
 const DANGEROUS_TAGS = new Set([
@@ -73,7 +73,7 @@ function serializeStyles(styles) {
       parts.push(`${prop}:${val}`)
     }
   }
-  return parts.length ? parts.join(';') : ''
+  return parts.length ? parts.join(';') + ';' : ''
 }
 
 /**
@@ -170,15 +170,30 @@ export function sanitizeAndInlineRichText(rawHtml = '', options = {}) {
     if (tagName === 'a') {
       const rawHref = node.attribs?.href || ''
       const safeHref = safeUrl(rawHref, '#')
+      const aColor = parsedStyles['color'] || BRAND_COLORS.blue
       const aStyles = {
-        color: BRAND_COLORS.blue,
         'text-decoration': 'underline',
         ...parsedStyles,
+        color: aColor,
       }
+      if (!parsedStyles['font-family']) aStyles['font-family'] = defaultFont
+      // Không ép font-weight: 700 để link kế thừa độ đậm chữ xung quanh (Ràng buộc 2)
       return `<a href="${escapeHtml(safeHref)}" target="_blank" style="${escapeHtml(serializeStyles(aStyles))}">${childrenHtml}</a>`
     }
 
+    if (tagName === 'mark') {
+      // Chuyển <mark> thành <span style="background-color:..."> CHỈ giữ background-color, không padding/border-radius (Ràng buộc 4)
+      const bgCol = node.attribs?.['data-color'] || parsedStyles['background-color'] || '#fff2a8'
+      const markStyles = {
+        ...parsedStyles,
+        'background-color': bgCol,
+      }
+      if (!parsedStyles['font-family']) markStyles['font-family'] = defaultFont
+      return `<span style="${escapeHtml(serializeStyles(markStyles))}">${childrenHtml}</span>`
+    }
+
     if (tagName === 'span') {
+      if (!parsedStyles['font-family']) parsedStyles['font-family'] = defaultFont
       const styleString = serializeStyles(parsedStyles)
       return styleString ? `<span style="${escapeHtml(styleString)}">${childrenHtml}</span>` : childrenHtml
     }

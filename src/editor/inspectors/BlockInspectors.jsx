@@ -3,6 +3,7 @@ import { ColorField } from './SettingsInspector.jsx'
 import ImageUploadField from '../../ImageUploadField.jsx'
 import { htmlToText, textToHtml } from '../textFormat.js'
 import { createBlock, BRAND_COLORS } from '../../model/defaults.js'
+import { RichTextField } from '../richText/index.js'
 
 function CommonStyleFields({ style = {}, onChangeStyle }) {
   function update(key, value) {
@@ -89,12 +90,12 @@ export function BlockInspectors({
     return (
       <div className="inspector-form">
         <div className="inspector-field">
-          <label>Tiêu đề (hỗ trợ **chữ đậm**)</label>
-          <input
-            type="text"
-            value={htmlToText(p.html)}
+          <label>Nội dung tiêu đề</label>
+          <RichTextField
+            value={p.html || ''}
+            singleLine={true}
             placeholder="Nhập tiêu đề..."
-            onChange={(e) => updateProp('html', textToHtml(e.target.value))}
+            onChange={(newHtml) => updateProp('html', newHtml)}
           />
         </div>
         <div className="inspector-field">
@@ -138,13 +139,12 @@ export function BlockInspectors({
       <div className="inspector-form">
         <div className="inspector-field">
           <label>Nội dung văn bản</label>
-          <textarea
-            rows={8}
-            value={htmlToText(p.html)}
-            placeholder="Dán hoặc gõ văn bản tại đây...&#10;&#10;Dùng **in đậm** để nhấn mạnh.&#10;Xuống 2 dòng để tạo đoạn mới."
-            onChange={(e) => updateProp('html', textToHtml(e.target.value))}
+          <RichTextField
+            value={p.html || ''}
+            singleLine={false}
+            placeholder="Dán hoặc gõ văn bản tại đây..."
+            onChange={(newHtml) => updateProp('html', newHtml)}
           />
-          <span className="field-hint">Dùng **chữ đậm** để in đậm. Cách 2 dòng tạo đoạn mới.</span>
         </div>
         <CommonStyleFields style={style} onChangeStyle={onChangeStyle} />
       </div>
@@ -155,9 +155,9 @@ export function BlockInspectors({
   if (block.type === 'list') {
     const items = p.items || []
 
-    function updateItemText(idx, text) {
+    function updateItemText(idx, html) {
       const nextItems = [...items]
-      nextItems[idx] = { html: textToHtml(text) }
+      nextItems[idx] = { html }
       updateProp('items', nextItems)
     }
 
@@ -196,11 +196,14 @@ export function BlockInspectors({
           <div className="sub-items-list">
             {items.map((item, idx) => (
               <div key={idx} className="sub-item-row">
-                <input
-                  type="text"
-                  value={htmlToText(item.html)}
-                  onChange={(e) => updateItemText(idx, e.target.value)}
-                />
+                <div className="sub-item-editor">
+                  <RichTextField
+                    value={item.html || ''}
+                    singleLine={true}
+                    placeholder="Nội dung mục..."
+                    onChange={(newHtml) => updateItemText(idx, newHtml)}
+                  />
+                </div>
                 <button
                   type="button"
                   className="icon-btn-danger"
@@ -303,10 +306,11 @@ export function BlockInspectors({
       <div className="inspector-form">
         <div className="inspector-field">
           <label>Chữ trên nút (Label)</label>
-          <input
-            type="text"
+          <RichTextField
             value={p.label || ''}
-            onChange={(e) => updateProp('label', e.target.value)}
+            singleLine={true}
+            placeholder="Chữ trên nút..."
+            onChange={(newHtml) => updateProp('label', newHtml)}
           />
         </div>
         <div className="inspector-field">
@@ -364,10 +368,11 @@ export function BlockInspectors({
       <div className="inspector-form">
         <div className="inspector-field">
           <label>Tiêu đề khối</label>
-          <input
-            type="text"
+          <RichTextField
             value={p.title || 'THÔNG TIN CHUYỂN KHOẢN'}
-            onChange={(e) => updateProp('title', e.target.value)}
+            singleLine={true}
+            placeholder="THÔNG TIN CHUYỂN KHOẢN"
+            onChange={(newHtml) => updateProp('title', newHtml)}
           />
         </div>
         <div className="inspector-field">
@@ -437,11 +442,11 @@ export function BlockInspectors({
         </div>
         <div className="inspector-field">
           <label>Ghi chú thanh toán (nếu có)</label>
-          <textarea
-            rows={3}
-            value={htmlToText(p.note)}
+          <RichTextField
+            value={p.note || ''}
+            singleLine={false}
             placeholder="Vui lòng kiểm tra kỹ nội dung..."
-            onChange={(e) => updateProp('note', textToHtml(e.target.value))}
+            onChange={(newHtml) => updateProp('note', newHtml)}
           />
         </div>
         <ColorField
@@ -513,20 +518,20 @@ export function BlockInspectors({
       <div className="inspector-form">
         <div className="inspector-field">
           <label>Lời kêu gọi hành động cuối thư</label>
-          <input
-            type="text"
+          <RichTextField
             value={p.closingLine || ''}
+            singleLine={true}
             placeholder="Đăng ký ngay hôm nay..."
-            onChange={(e) => updateProp('closingLine', e.target.value)}
+            onChange={(newHtml) => updateProp('closingLine', newHtml)}
           />
         </div>
         <div className="inspector-field">
           <label>Lời kết / Lời chào</label>
-          <input
-            type="text"
+          <RichTextField
             value={p.signOff || ''}
+            singleLine={true}
             placeholder="Trân trọng,"
-            onChange={(e) => updateProp('signOff', e.target.value)}
+            onChange={(newHtml) => updateProp('signOff', newHtml)}
           />
         </div>
         <ColorField
@@ -611,10 +616,11 @@ export function BlockInspectors({
       <div className="inspector-form">
         <div className="inspector-field">
           <label>Tiêu đề thẻ</label>
-          <input
-            type="text"
+          <RichTextField
             value={p.title || ''}
-            onChange={(e) => updateProp('title', e.target.value)}
+            singleLine={true}
+            placeholder="Tiêu đề thẻ..."
+            onChange={(newHtml) => updateProp('title', newHtml)}
           />
         </div>
         <ColorField
@@ -895,12 +901,13 @@ export function BlockInspectors({
 
           <div className="inspector-field">
             <label>Tiêu đề card</label>
-            <input
-              type="text"
+            <RichTextField
               value={currentCard.title || ''}
-              onChange={(e) => {
+              singleLine={true}
+              placeholder="Tiêu đề card..."
+              onChange={(newHtml) => {
                 const nextCards = [...cards]
-                nextCards[cardIdx] = { ...currentCard, title: e.target.value }
+                nextCards[cardIdx] = { ...currentCard, title: newHtml }
                 updateCards(nextCards)
               }}
             />
@@ -975,18 +982,20 @@ export function BlockInspectors({
       <div className="inspector-form">
         <div className="inspector-field">
           <label>Tiêu đề khối ưu đãi</label>
-          <input
-            type="text"
+          <RichTextField
             value={p.title || ''}
-            onChange={(e) => updateProp('title', e.target.value)}
+            singleLine={true}
+            placeholder="Tiêu đề khối ưu đãi..."
+            onChange={(newHtml) => updateProp('title', newHtml)}
           />
         </div>
         <div className="inspector-field">
           <label>Phụ đề / dòng nhấn mạnh</label>
-          <input
-            type="text"
+          <RichTextField
             value={p.subtitle || ''}
-            onChange={(e) => updateProp('subtitle', e.target.value)}
+            singleLine={true}
+            placeholder="Phụ đề..."
+            onChange={(newHtml) => updateProp('subtitle', newHtml)}
           />
         </div>
 

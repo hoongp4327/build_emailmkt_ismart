@@ -1,6 +1,7 @@
 export const MAX_IMAGE_BYTES = 4 * 1024 * 1024
 export const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
-export const IMAGE_SLOTS = ['banner', 'benefit', 'mascot']
+export const IMAGE_KINDS = ['image', 'qr', 'banner', 'mascot']
+export const IMAGE_SLOTS = IMAGE_KINDS
 export const UPLOAD_PATH = '/api/upload-image'
 
 export function validateImageFile(file) {

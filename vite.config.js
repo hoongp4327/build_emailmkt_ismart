@@ -50,15 +50,14 @@ function uploadApiDevPlugin() {
           }
         }
 
-        // Mock response khi chưa cấu hình Cloudinary env để test mượt mà giao diện
+        // Báo lỗi rõ ràng khi chưa cấu hình Cloudinary env trên máy local
         if (req.method === 'POST') {
-          const url = new URL(req.url, 'http://localhost:5173')
-          const kind = url.searchParams.get('kind') || 'image'
-          res.statusCode = 200
+          res.statusCode = 503
           res.setHeader('Content-Type', 'application/json')
           res.end(
             JSON.stringify({
-              url: `https://res.cloudinary.com/demo/image/upload/sample-${kind}-${Date.now()}.png`,
+              error:
+                'Chưa cấu hình API Cloudinary trên máy. Vui lòng tạo file .env chứa CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET để upload ảnh.',
             })
           )
           return

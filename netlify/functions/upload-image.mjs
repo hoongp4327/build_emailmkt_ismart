@@ -75,14 +75,25 @@ export function createUploadHandler({ env = process.env, fetchImpl = fetch } = {
     for (const [key, value] of Object.entries(params)) form.append(key, value)
     form.append('api_key', apiKey)
     form.append('signature', signature)
+    form.append('signature_algorithm', 'sha256')
     form.append('file', new Blob([bytes], { type: contentType }), `${kind}.${contentType === 'image/jpeg' ? 'jpg' : contentType.split('/')[1]}`)
 
     try {
+      const authHeader = 'Basic ' + Buffer.from(`${apiKey}:${apiSecret}`).toString('base64')
       const response = await fetchImpl(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-        method: 'POST', body: form, signal: AbortSignal.timeout(25000),
+        method: 'POST',
+        headers: {
+          Authorization: authHeader,
+        },
+        body: form,
+        signal: AbortSignal.timeout(25000),
       })
       if (!response.ok) {
-        if (response.status === 401 || response.status === 403) return json(502, { error: 'Không kết nối được kho ảnh. Quản trị viên cần kiểm tra cấu hình Cloudinary.' })
+        if (process.env.NODE_ENV !== 'production') {
+          const errText = await response.clone().text().catch(() => '')
+          console.error('[Cloudinary upload failed]:', response.status, errText)
+        }
+        if (response.status === 401 || response.status === 403) return json(502, { error: 'Không kết nối được kho ảnh. Quản trị viên cần kiểm tra cấu hình Cloudinary (API Key / Secret).' })
         if (response.status === 429) return json(429, { error: 'Kho ảnh đang bận. Vui lòng thử lại sau một phút.' })
         if (response.status === 400) return json(422, { error: 'Kho ảnh không nhận được file này. Vui lòng thử một ảnh JPG hoặc PNG khác.' })
         return json(502, { error: 'Chưa tải được ảnh lên kho lưu trữ. Vui lòng thử lại sau.' })

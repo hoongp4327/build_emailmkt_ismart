@@ -1,0 +1,289 @@
+{
+  "version": 2,
+  "settings": {
+    "width": 640,
+    "outerBg": "#eef7fc",
+    "contentBg": "#ffffff",
+    "fontFamily": "Arial, Helvetica, sans-serif",
+    "baseFontSize": 14,
+    "textColor": "#254166",
+    "radius": 22,
+    "palette": {
+      "navy": "#082e6f",
+      "blue": "#0870c5",
+      "orange": "#ff641c",
+      "lime": "#80b600",
+      "text": "#254166",
+      "pale": "#eef7fc"
+    }
+  },
+  "blocks": [
+    {
+      "id": "ilead-banner",
+      "type": "image",
+      "props": {
+        "src": "https://res.cloudinary.com/vcmbh1dy/image/upload/v1787127981/banner-ilead.jpg",
+        "alt": "iLEAD",
+        "width": "full",
+        "align": "center",
+        "radius": 0
+      },
+      "style": {
+        "paddingTop": 0,
+        "paddingBottom": 0,
+        "paddingX": 0
+      }
+    },
+    {
+      "id": "ilead-preamble",
+      "type": "text",
+      "props": {
+        "html": "<p>Kính gửi toàn thể Anh/Chị CBNV Hà Nội,</p><p>Trong bối cảnh tiếng Anh ngày càng đóng vai trò quan trọng trong học tập, công việc và hội nhập quốc tế, định hướng đưa tiếng Anh trở thành ngôn ngữ thứ hai trong trường học đang mở ra yêu cầu ngày càng cao về việc xây dựng nền tảng tiếng Anh cho học sinh ngay từ sớm.</p><p>iSMART khai giảng Chương trình Tiếng Anh Online iLEAD Pre-A1 & A1 với chính sách ưu đãi đặc biệt DÀNH RIÊNG CHO CON EM CBNV iSMART HÀ NỘI CẤP TIỂU HỌC.</p><p>iLEAD được định hướng xây dựng nền tảng tiếng Anh bài bản, giúp học sinh phát triển năng lực sử dụng tiếng Anh theo từng cấp độ và có đầu ra rõ ràng theo Khung tham chiếu trình độ ngôn ngữ chung châu Âu (CEFR), Pre-A1 - Pre-B1.</p>"
+      },
+      "style": {
+        "paddingTop": 27,
+        "paddingBottom": 15,
+        "paddingX": 34,
+        "align": "justify"
+      }
+    },
+    {
+      "id": "ilead-info",
+      "type": "infoCard",
+      "props": {
+        "title": "THÔNG TIN CHƯƠNG TRÌNH",
+        "headerBg": "#082e6f",
+        "headerColor": "#ffffff",
+        "bodyBlocks": [
+          {
+            "id": "ilead-info-list",
+            "type": "list",
+            "props": {
+              "marker": "📌",
+              "markerColor": "#ff641c",
+              "items": [
+                { "html": "<strong>Chương trình:</strong> iLEAD - CHUẨN ĐẦU RA QUỐC TẾ, khai giảng lớp Pre-A1 & A1" },
+                { "html": "<strong>Đối tượng tham gia:</strong> Con em, cháu của CBNV iSMART Hà Nội trong độ tuổi từ 6-10 tuổi" },
+                { "html": "<strong>Hình thức học:</strong> Học trực tuyến (Online)" },
+                { "html": "<strong>Thời lượng:</strong> 60 buổi; 2 buổi/tuần; 90 phút/buổi (70 phút học trực tiếp với giáo viên & 20 phút làm bài tập với sự hỗ trợ của trợ giảng)" },
+                { "html": "<strong>Sĩ số lớp:</strong> 8 học sinh/lớp" },
+                { "html": "<strong>Giáo viên:</strong> Đội ngũ giáo viên giàu kinh nghiệm, được đào tạo bài bản, phương pháp giảng dạy chú trọng tương tác, thực hành và phát triển năng lực sử dụng tiếng Anh" },
+                { "html": "<strong>Lịch khai giảng dự kiến:</strong> Tháng 08/2026" }
+              ]
+            }
+          },
+          {
+            "id": "ilead-info-note",
+            "type": "text",
+            "props": {
+              "html": "<p><em>(Lịch học cụ thể sẽ được thông báo sau khi chốt danh sách học sinh.)</em></p>"
+            },
+            "style": {
+              "paddingTop": 6,
+              "paddingBottom": 6,
+              "paddingX": 0,
+              "align": "justify"
+            }
+          },
+          {
+            "id": "ilead-info-cta",
+            "type": "button",
+            "props": {
+              "label": "Xem chi tiết chương trình",
+              "url": "https://ilead-ismart.netlify.app/",
+              "align": "center",
+              "variant": "outline",
+              "color": "#0870c5"
+            }
+          }
+        ]
+      },
+      "style": {
+        "paddingTop": 0,
+        "paddingBottom": 28,
+        "paddingX": 34
+      }
+    },
+    {
+      "id": "ilead-benefits",
+      "type": "imageText",
+      "props": {
+        "imagePosition": "right",
+        "imageWidth": 132,
+        "src": "https://res.cloudinary.com/vcmbh1dy/image/upload/v1787128368/benefit-02_optimize.png",
+        "alt": "Minh họa lợi ích",
+        "contentBlocks": [
+          {
+            "id": "ilead-benefits-heading",
+            "type": "heading",
+            "props": {
+              "html": "🎯 ĐỊNH HƯỚNG ĐÀO TẠO",
+              "level": 2,
+              "color": "#082e6f",
+              "fontSize": 21
+            },
+            "style": {
+              "paddingTop": 0,
+              "paddingBottom": 12,
+              "paddingX": 0
+            }
+          },
+          {
+            "id": "ilead-benefits-list",
+            "type": "list",
+            "props": {
+              "marker": "✓",
+              "markerColor": "#80b600",
+              "items": [
+                { "html": "Xây dựng nền tảng tiếng Anh bài bản, vững chắc" },
+                { "html": "Phát triển toàn diện các kỹ năng nghe, nói, đọc, viết" },
+                { "html": "Lộ trình học tập theo từng cấp độ, phù hợp với năng lực của học sinh" },
+                { "html": "Đầu ra cam kết, đạt chuẩn năng lực theo từng cấp độ, sẵn sàng cho các Kỳ thi quốc tế" }
+              ]
+            }
+          }
+        ]
+      },
+      "style": {
+        "paddingTop": 26,
+        "paddingBottom": 28,
+        "paddingX": 34,
+        "bg": "#eef7fc"
+      }
+    },
+    {
+      "id": "ilead-offers",
+      "type": "offerCards",
+      "props": {
+        "title": "💰 ƯU ĐÃI ĐẶC BIỆT DÀNH CHO iSMART HÀ NỘI",
+        "subtitle": "Học phí ưu đãi: Giảm 45% so với học phí công bố",
+        "columns": 2,
+        "cards": [
+          {
+            "title": "📌 LỚP PRE-A1",
+            "contentBlocks": [
+              {
+                "id": "ilead-card-1-list",
+                "type": "list",
+                "props": {
+                  "marker": "✓",
+                  "markerColor": "#80b600",
+                  "items": [
+                    { "html": "100% Giáo viên Việt Nam: 4.515.000 VNĐ/khóa (giá gốc: 8.211.000 VNĐ)" },
+                    { "html": "50% Giáo viên Việt Nam - 50% Giáo viên nước ngoài: 5.465.000 VNĐ/khóa (giá gốc: 9.936.000 VNĐ)" }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "title": "📌 LỚP A1",
+            "contentBlocks": [
+              {
+                "id": "ilead-card-2-list",
+                "type": "list",
+                "props": {
+                  "marker": "✓",
+                  "markerColor": "#80b600",
+                  "items": [
+                    { "html": "100% Giáo viên Việt Nam: 5.118.000 VNĐ/khóa (giá gốc: 9.305.800 VNĐ)" },
+                    { "html": "50% Giáo viên Việt Nam - 50% Giáo viên nước ngoài: 6.193.000 VNĐ/khóa (giá gốc: 11.260.800 VNĐ)" }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "style": {
+        "paddingTop": 30,
+        "paddingBottom": 34,
+        "paddingX": 34
+      }
+    },
+    {
+      "id": "ilead-registration",
+      "type": "imageText",
+      "props": {
+        "imagePosition": "right",
+        "imageWidth": 150,
+        "src": "https://res.cloudinary.com/vcmbh1dy/image/upload/v1787128125/issacc_optimize.png",
+        "alt": "Mascot iSSACC",
+        "boxed": true,
+        "contentBlocks": [
+          {
+            "id": "ilead-reg-heading",
+            "type": "heading",
+            "props": {
+              "html": "ĐĂNG KÝ THAM GIA",
+              "level": 1,
+              "color": "#082e6f",
+              "fontSize": 22
+            },
+            "style": {
+              "paddingTop": 0,
+              "paddingBottom": 10,
+              "paddingX": 0
+            }
+          },
+          {
+            "id": "ilead-reg-deadline",
+            "type": "list",
+            "props": {
+              "marker": "⏰",
+              "markerColor": "#ff641c",
+              "items": [
+                { "html": "<strong>Hạn đăng ký:</strong> 12:00 ngày /08/2026" }
+              ]
+            }
+          },
+          {
+            "id": "ilead-reg-text",
+            "type": "text",
+            "props": {
+              "html": "<p>Mọi thắc mắc hoặc cần hỗ trợ thêm, Anh/Chị vui lòng liên hệ:</p>"
+            },
+            "style": {
+              "paddingTop": 8,
+              "paddingBottom": 8,
+              "paddingX": 0,
+              "align": "left"
+            }
+          },
+          {
+            "id": "ilead-reg-hotline",
+            "type": "list",
+            "props": {
+              "marker": "☎",
+              "markerColor": "#ff641c",
+              "items": [
+                { "html": "<strong>Hotline:</strong> 0967 417 895" }
+              ]
+            }
+          }
+        ]
+      },
+      "style": {
+        "paddingTop": 0,
+        "paddingBottom": 28,
+        "paddingX": 34
+      }
+    },
+    {
+      "id": "ilead-footer",
+      "type": "footer",
+      "props": {
+        "closingLine": "Đăng ký ngay hôm nay, để con tự tin chinh phục thế giới bằng tiếng Anh",
+        "signOff": "Trân trọng,",
+        "bg": "#082e6f",
+        "color": "#ffffff"
+      },
+      "style": {
+        "paddingTop": 25,
+        "paddingBottom": 34,
+        "paddingX": 34,
+        "align": "center"
+      }
+    }
+  ]
+}

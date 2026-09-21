@@ -80,6 +80,38 @@ export function cleanPastedHTML(html = '', options = {}) {
       return childrenHtml
     }
 
+    // Xử lý danh sách: ul, ol bóc vỏ; mỗi li thành 1 đoạn <p> riêng biệt
+    if (tagName === 'ul' || tagName === 'ol') {
+      return childrenHtml
+    }
+
+    if (tagName === 'li') {
+      const trimmed = childrenHtml.trim()
+      if (!trimmed) return ''
+      if (singleLine) {
+        return `${trimmed.replace(/<\/?p[^>]*>/gi, '')} `
+      }
+      if (trimmed.startsWith('<p>') || trimmed.startsWith('<p ')) {
+        return childrenHtml
+      }
+      return `<p>${childrenHtml}</p>`
+    }
+
+    // Xử lý tiêu đề: h1 - h6 thành <p><strong>...</strong></p>
+    if (/^h[1-6]$/.test(tagName)) {
+      const trimmed = childrenHtml.trim()
+      if (!trimmed) return ''
+      if (singleLine) {
+        return `<strong>${childrenHtml}</strong> `
+      }
+      return `<p><strong>${childrenHtml}</strong></p>`
+    }
+
+    // Xử lý blockquote, pre, code: unwrap giữ lại text và định dạng con
+    if (tagName === 'blockquote' || tagName === 'pre' || tagName === 'code') {
+      return childrenHtml
+    }
+
     // Nếu là ô 1 dòng: không cho phép sinh thẻ block <p> hoặc <br>, thay bằng dấu cách
     if (singleLine) {
       if (tagName === 'p' || tagName === 'br' || tagName === 'div') {

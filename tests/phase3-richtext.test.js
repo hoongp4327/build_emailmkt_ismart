@@ -33,10 +33,19 @@ function createTestEditor(content = '', singleLine = false) {
     extensions: [
       StarterKit.configure({
         undoRedo: false, // Tắt undo nội bộ TipTap
+        heading: false,
+        bulletList: false,
+        orderedList: false,
+        listItem: false,
+        listKeymap: false,
+        blockquote: false,
+        codeBlock: false,
+        code: false,
+        horizontalRule: false,
         link: { openOnClick: false },
       }),
       TextStyleKit,
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      TextAlign.configure({ types: ['paragraph'] }),
       Highlight.configure({ multicolor: true }),
     ],
     content,
@@ -215,3 +224,49 @@ test('Editor Focus + Gõ -> App Undo: setContent nhận giá trị cũ từ bên
 
   editor.destroy()
 })
+
+// 12. Test QA Phase 3: Gõ/dán "- mục 1\n- mục 2" render ra 2 dòng tách biệt, không dính liền
+test('QA Phase 3: gõ/dán "- mục 1\\n- mục 2" vào khối text, render email ra 2 dòng tách biệt, không dính liền', () => {
+  const editor = createTestEditor()
+
+  // Gõ danh sách gạch đầu dòng (không bị input rule tự động biến thành <ul><li>)
+  editor.commands.insertContent('<p>- mục 1</p><p>- mục 2</p>')
+  const html = editor.getHTML()
+
+  // Kiểm tra không sinh thẻ ul hoặc li
+  assert.ok(!html.includes('<ul>'), 'Không được sinh thẻ <ul> trong khối text')
+  assert.ok(!html.includes('<li>'), 'Không được sinh thẻ <li> trong khối text')
+
+  // Render email qua sanitizeAndInlineRichText
+  const inlined = sanitizeAndInlineRichText(html, { fontFamily: 'Arial, Helvetica, sans-serif' })
+
+  // Phải ra 2 đoạn <p> tách biệt, mỗi đoạn có margin đáy để không dính nhau
+  assert.ok(inlined.includes('<p style="margin:0 0 12px;'), 'Đoạn 1 phải có margin:0 0 12px')
+  assert.ok(inlined.includes('- mục 1'), 'Phải chứa nội dung mục 1')
+  assert.ok(inlined.includes('- mục 2'), 'Phải chứa nội dung mục 2')
+
+  // Tuyệt đối không bị dính liền thành "- mục 1- mục 2" hay "- mục 1mục 2"
+  assert.ok(!inlined.includes('- mục 1- mục 2'), 'Không bị dính liền hai dòng')
+  assert.ok(!inlined.includes('- mục 1mục 2'), 'Không bị dính liền hai dòng')
+
+  editor.destroy()
+})
+
+// 13. Test pasteFilter: ul/ol/li thành <p>, h1-h6 thành <p><strong>, blockquote/pre/code unwrap
+test('pasteFilter: ul/ol/li thành <p>, h1-h6 thành <p><strong>, blockquote/pre/code unwrap', () => {
+  // Dán ul/ol/li nguồn ngoài -> mỗi li thành 1 <p> riêng
+  const listHtml = '<ul><li>Mục một</li><li>Mục hai</li></ul>'
+  const cleanedList = cleanPastedHTML(listHtml)
+  assert.equal(cleanedList, '<p>Mục một</p><p>Mục hai</p>')
+
+  // Dán h1 - h6 -> thành <p><strong>...</strong></p>
+  const headingHtml = '<h2>Tiêu đề mục</h2><p>Nội dung đoạn văn</p>'
+  const cleanedHeading = cleanPastedHTML(headingHtml)
+  assert.equal(cleanedHeading, '<p><strong>Tiêu đề mục</strong></p><p>Nội dung đoạn văn</p>')
+
+  // Dán blockquote, pre, code -> unwrap giữ lại text
+  const codeQuoteHtml = '<blockquote>Đoạn trích dẫn</blockquote><pre><code>nội dung code</code></pre>'
+  const cleanedCodeQuote = cleanPastedHTML(codeQuoteHtml)
+  assert.equal(cleanedCodeQuote, 'Đoạn trích dẫnnội dung code')
+})
+

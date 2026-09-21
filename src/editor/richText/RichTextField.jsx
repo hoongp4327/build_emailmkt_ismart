@@ -56,13 +56,22 @@ export function RichTextField({
   const extensions = [
     StarterKit.configure({
       undoRedo: false, // TẮT undo nội bộ TipTap để app useHistory quản lý duy nhất (Ràng buộc 1 & 6)
+      heading: false,
+      bulletList: false,
+      orderedList: false,
+      listItem: false,
+      listKeymap: false,
+      blockquote: false,
+      codeBlock: false,
+      code: false,
+      horizontalRule: false,
       link: {
         openOnClick: false, // Không mở link khi đang sửa trong editor (Ràng buộc 7)
       },
     }),
     TextStyleKit, // Gói chính thức gồm TextStyle, FontSize, LineHeight, Color, FontFamily, BackgroundColor
     TextAlign.configure({
-      types: ['heading', 'paragraph'],
+      types: ['paragraph'],
     }),
     Highlight.configure({
       multicolor: true,

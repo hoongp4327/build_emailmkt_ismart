@@ -121,8 +121,14 @@ export function sanitizeAndInlineRichText(rawHtml = '', options = {}) {
     const tagName = node.name.toLowerCase()
     const childrenHtml = (node.children || []).map(renderNode).join('')
 
-    // Nếu thẻ không nằm trong whitelist -> unwrap (giữ lại nội dung con an toàn)
+    // Nếu thẻ không nằm trong whitelist -> unwrap hoặc tách đoạn an toàn nếu là li / h1-h6
     if (!ALLOWED_TAGS.has(tagName)) {
+      if (tagName === 'li') {
+        return `<p style="margin:0 0 12px;font-family:${defaultFont};font-size:${defaultFontSize};line-height:${defaultLineHeight};color:${defaultColor};text-align:${defaultAlign};">${childrenHtml}</p>`
+      }
+      if (/^h[1-6]$/.test(tagName)) {
+        return `<p style="margin:0 0 12px;font-family:${defaultFont};font-size:${defaultFontSize};line-height:${defaultLineHeight};color:${defaultColor};text-align:${defaultAlign};"><strong style="font-weight:700;font-family:${defaultFont};">${childrenHtml}</strong></p>`
+      }
       return childrenHtml
     }
 
